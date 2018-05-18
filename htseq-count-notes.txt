@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+#converts name-sorted bam to sam and then pipes the sam to htseq-count
+#htseq-count, ignoring alignment score, counts CDS products printing the counts as:
+#[Product]  [ID #used to get pathway info later]    [Count]
+samtools view -h RNA_cancer_R1_sample_03.fastq.gz.bam | htseq-count -a 0 --additional-attr ID -t CDS -i product - test.gff > counts03.txt
+
+#if we want, this will get us the products that have the most counts
+sort -t'	' -k3,3 -nr counts03.txt | head
+
+#better way
+set="01 02 03"
+samtools view -h RNA_cancer_R1_sample_"$num".fastq.gz.bam | htseq-count -a 0 -t CDS -i product - ../gffs/all.RefSeq-CDS.gff > ../counts/cancer"$num".txt
+samtools view -h RNA_control_R1_sample_"$num".fastq.gz.bam | htseq-count -a 0 -t CDS -i product - ../gffs/all.RefSeq-CDS.gff > ../counts/control"$num".txt

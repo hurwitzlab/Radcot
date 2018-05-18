@@ -1,0 +1,48 @@
+BootStrap: debootstrap
+OSVersion: trusty
+MirrorURL: http://us.archive.ubuntu.com/ubuntu/
+
+%environment
+    PATH="/cuffdiff-keggR/scripts:/media/miniconda/bin:$PATH"
+
+%runscript
+    echo "By default this runs cuffdiff\n/
+    Use exec [image-name] cuffnorm, etc. for other Tuxedo programs"
+    exec cuffKeggR.py "$@"
+
+%post
+    echo "Hello from inside the container"
+    sed -i 's/$/ universe/' /etc/apt/sources.list
+    #essential stuff
+    apt update
+    apt -y --force-yes install git sudo man vim build-essential wget unzip
+    
+    cd /tmp
+
+    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    bash miniconda.sh -b -p /media/miniconda
+    PATH="/media/miniconda/bin:$PATH"
+    conda install -y -c bioconda cufflinks
+    conda install -y -c bioconda r-optparse 
+    conda install -y -c r r-rcolorbrewer r-reshape2 
+    conda install -y -c r r-ggplot2 r-dplyr r-plyr r-r.utils r-tidyr
+
+    #cleanup    
+    conda clean -y --all
+    rm -rf /tmp/*
+    cd /
+
+    git clone https://github.com/hurwitzlab/cuffdiff-keggR.git
+    chmod +x /cuffdiff-keggR/scripts/cuffKeggR.py
+
+    #so we dont get those stupid perl warnings
+    locale-gen en_US.UTF-8
+
+    #directory bind points for TACC
+    mkdir /work
+    mkdir /scratch
+    mkdir /home1
+
+    #for ubuntu vbox vagrant
+    #comment out once ready for deployment
+    mkdir /vagrant

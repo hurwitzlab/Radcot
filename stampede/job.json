@@ -1,0 +1,29 @@
+{
+  "name": "centrifuge-patric soilAssembly test",
+  "appId": "centrifuge-patric-0.0.5",
+  "batchQueue": "normal",
+  "executionSystem": "tacc-stampede2-sdaniel",
+  "maxRunTime": "12:00:00",
+  "memoryPerNode": "96GB",
+  "nodeCount": 1,
+  "processorsPerNode": 16,
+  "archive": false,
+  "archiveSystem": "data.iplantcollaborative.org",
+  "archivePath": "",
+  "inputs": {
+    "QUERY": [
+      "scottdaniel/foodMicrobes"
+      ]
+  },
+  "parameter": {
+    "FORMAT": [
+      "fastq"
+      ],
+    "MIN_ABUNDANCE": [
+      0.05
+      ],
+    "EXCLUDE_TAXIDS": [
+      "9606,32630"
+      ]
+  }
+}

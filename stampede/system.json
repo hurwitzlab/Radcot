@@ -1,0 +1,158 @@
+{
+  "maxSystemJobs": 50,
+  "_links": {
+    "owner": {
+      "href": "https://agave.iplantc.org/profiles/v2/scottdaniel"
+    },
+    "metadata": {
+      "href": "https://agave.iplantc.org/meta/v2/data/?q=%7B%22associationIds%22%3A%228063648673042787864-242ac118-0001-006%22%7D"
+    },
+    "credentials": {
+      "href": "https://agave.iplantc.org/systems/v2/tacc-stampede2-sdaniel/credentials"
+    },
+    "roles": {
+      "href": "https://agave.iplantc.org/systems/v2/tacc-stampede2-sdaniel/roles"
+    },
+    "self": {
+      "href": "https://agave.iplantc.org/systems/v2/tacc-stampede2-sdaniel"
+    },
+    "history": {
+      "href": "https://agave.iplantc.org/systems/v2/tacc-stampede2-sdaniel/history"
+    }
+  },
+  "executionType": "HPC",
+  "available": true,
+  "description": "Stampede2 is well suited for highly parallel applications scalable to tens of thousands of cores.",
+  "storage": {
+    "proxy": null,
+    "protocol": "SFTP",
+    "mirror": false,
+    "port": 22,
+    "auth": {
+      "type": "SSHKEYS"
+    },
+    "host": "login4.stampede2.tacc.utexas.edu",
+    "rootDir": "/work/03859/sdaniel/stampede2/",
+    "homeDir": "/"
+  },
+  "type": "EXECUTION",
+  "login": {
+    "proxy": null,
+    "protocol": "SSH",
+    "port": 22,
+    "auth": {
+      "type": "SSHKEYS"
+    },
+    "host": "login4.stampede2.tacc.utexas.edu"
+  },
+  "uuid": "8063648673042787864-242ac118-0001-006",
+  "startupScript": "./.bashrc",
+  "scheduler": "SLURM",
+  "default": false,
+  "public": false,
+  "maxSystemJobsPerUser": 50,
+  "id": "tacc-stampede2-sdaniel",
+  "workDir": "",
+  "owner": "scottdaniel",
+  "revision": 1,
+  "site": "tacc.utexas.edu",
+  "environment": null,
+  "queues": [
+    {
+      "maxJobs": 3,
+      "maxMemoryPerNode": 192,
+      "default": false,
+      "maxRequestedTime": "48:00:00",
+      "name": "skx-large",
+      "description": null,
+      "maxNodes": 868,
+      "maxProcessorsPerNode": 41664,
+      "mappedName": null,
+      "maxUserJobs": 3,
+      "customDirectives": "-A iPlant-Collabs"
+    },
+    {
+      "maxJobs": 5,
+      "maxMemoryPerNode": 96,
+      "default": false,
+      "maxRequestedTime": "48:00:00",
+      "name": "large",
+      "description": null,
+      "maxNodes": 2048,
+      "maxProcessorsPerNode": 68,
+      "mappedName": null,
+      "maxUserJobs": 5,
+      "customDirectives": "-A iPlant-Collabs"
+    },
+    {
+      "maxJobs": 25,
+      "maxMemoryPerNode": 192,
+      "default": false,
+      "maxRequestedTime": "48:00:00",
+      "name": "skx-normal",
+      "description": null,
+      "maxNodes": 128,
+      "maxProcessorsPerNode": 6144,
+      "mappedName": null,
+      "maxUserJobs": 25,
+      "customDirectives": "-A iPlant-Collabs"
+    },
+    {
+      "maxJobs": 1,
+      "maxMemoryPerNode": 192,
+      "default": false,
+      "maxRequestedTime": "02:00:00",
+      "name": "skx-dev",
+      "description": null,
+      "maxNodes": 4,
+      "maxProcessorsPerNode": 192,
+      "mappedName": null,
+      "maxUserJobs": 1,
+      "customDirectives": "-A iPlant-Collabs"
+    },
+    {
+      "maxJobs": 50,
+      "maxMemoryPerNode": 96,
+      "default": false,
+      "maxRequestedTime": "48:00:00",
+      "name": "normal",
+      "description": null,
+      "maxNodes": 256,
+      "maxProcessorsPerNode": 136,
+      "mappedName": null,
+      "maxUserJobs": 50,
+      "customDirectives": "-A iPlant-Collabs"
+    },
+    {
+      "maxJobs": 1,
+      "maxMemoryPerNode": 96,
+      "default": true,
+      "maxRequestedTime": "02:00:00",
+      "name": "development",
+      "description": null,
+      "maxNodes": 8,
+      "maxProcessorsPerNode": 136,
+      "mappedName": null,
+      "maxUserJobs": 1,
+      "customDirectives": "-A iPlant-Collabs"
+    },
+    {
+      "maxJobs": 50,
+      "maxMemoryPerNode": 96,
+      "default": false,
+      "maxRequestedTime": "48:00:00",
+      "name": "flat-quadrant",
+      "description": null,
+      "maxNodes": 256,
+      "maxProcessorsPerNode": 136,
+      "mappedName": null,
+      "maxUserJobs": 50,
+      "customDirectives": "-A iPlant-Collabs"
+    }
+  ],
+  "globalDefault": false,
+  "name": "TACC Stampede2 [sdaniel]",
+  "lastModified": "2018-04-17T15:59:53.000-05:00",
+  "status": "UP",
+  "scratchDir": ""
+}
