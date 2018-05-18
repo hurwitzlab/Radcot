@@ -15,4 +15,4 @@ export MY_PARAMRUN="$HOME/launcher/paramrun"
 
 [[ -d "$OUT_DIR" ]] && rm -rf $OUT_DIR/*
 
-bash run.sh -q "$WORK/in/dna" -f fastq -o $OUT_DIR -x 9606,32630
+bash cent-run.sh -q "$WORK/in/dna" -f fastq -o $OUT_DIR -x 9606,32630
