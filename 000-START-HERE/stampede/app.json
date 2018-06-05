@@ -1,0 +1,64 @@
+{
+    "name": "cuffKeggR",
+    "version": "0.0.1",
+    "shortDescription": "Compares \"expression\" levels of your RNA counts between metagenomic samples.",
+    "longDescription": "[From Website] Comparing expression levels of genes and transcripts in RNA-Seq experiments is a hard problem. Cuffdiff is a highly accurate tool for performing these comparisons, and can tell you not only which genes are up- or down-regulated between two or more conditions, but also which genes are differentially spliced or are undergoing other types of isoform-level regulation.",
+    "available": true,
+    "checkpointable": false,
+    "defaultMemoryPerNode": 192,
+    "defaultProcessorsPerNode": 48,
+    "defaultMaxRunTime": "12:00:00",
+    "defaultNodeCount": 1,
+    "defaultQueue": "normal",
+    "deploymentPath": "scottdaniel/applications/cuffKeggR-0.0.1/stampede",
+    "deploymentSystem": "data.iplantcollaborative.org",
+    "executionSystem": "tacc-stampede2-scottdaniel",
+    "executionType": "HPC",
+    "helpURI": "http://cole-trapnell-lab.github.io/cufflinks/cuffdiff/index.html",
+    "label": "Runs cuffdiff and then produces comparison graphs annotated with KEGG",
+    "parallelism": "Serial",
+    "templatePath": "template.sh",
+    "testPath": "test.sh",
+    "modules": [
+        "tacc-singularity",
+        "launcher"
+    ],
+    "tags": [
+        "imicrobe"
+    ],
+    "ontology": [
+        "http://sswapmeet.sswap.info/agave/apps/Application"
+    ],
+    "inputs": [
+        {
+            "id": "sam_input",
+            "value": {
+                "default": "",
+                "order": 1,
+                "validator": "(sam|bam|cxb)",
+                "required": true,
+                "visible": true,
+                "enquote": true
+            },
+            "semantics": {
+                "ontology": [
+                    "http://sswapmeet.sswap.info/mime/application/X-bam"
+                ],
+                "minCardinality": 1,
+                "maxCardinality": -1,
+                "fileTypes": [
+                    "raw-0"
+                ]
+            },
+            "details": {
+                "description": "Supply replicate SAMs/BAMs/CXBs as comma separated lists for each condition: sample1_rep1.sam,sample1_rep2.sam,...sample1_repM.sam",
+                "label": "Sam/Bam/Cxb input",
+                "argument": "-i",
+                "repeatArgument": true,
+                "showArgument": true
+            }
+        }
+    ],
+    "parameters": [],
+    "outputs": []
+}

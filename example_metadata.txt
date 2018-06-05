@@ -1,8 +1,0 @@
-label	dna_forward	dna_reverse	dna_unpaired	rna_forward	rna_reverse	rna_unpaired	count_files	condition
-control01	DNA_3_ACAGTG_L007_R1_001.fastq	DNA_3_ACAGTG_L007_R2_001.fastq		RNA_3_CAGATC_L008_R1_001.fastq	RNA_3_CAGATC_L008_R2_001.fastq		control01.txt	control
-control02	DNA_3_ACAGTG_L007_R1_002.fastq	DNA_3_ACAGTG_L007_R2_002.fastq		RNA_3_CAGATC_L008_R1_002.fastq	RNA_3_CAGATC_L008_R2_002.fastq		control02.txt	control
-control03	DNA_3_ACAGTG_L007_R1_003.fastq	DNA_3_ACAGTG_L007_R2_003.fastq		RNA_3_CAGATC_L008_R1_003.fastq	RNA_3_CAGATC_L008_R2_003.fastq		control03.txt	control
-cancer01	DNA_2_TGACCA_L007_R1_001.fastq	DNA_2_TGACCA_L007_R2_001.fastq		RNA_2_GCCAAT_L008_R1_001.fastq	RNA_2_GCCAAT_L008_R2_001.fastq		cancer01.txt	cancer
-cancer02	DNA_2_TGACCA_L007_R1_002.fastq	DNA_2_TGACCA_L007_R2_002.fastq		RNA_2_GCCAAT_L008_R1_002.fastq	RNA_2_GCCAAT_L008_R2_002.fastq		cancer02.txt	cancer
-cancer03	DNA_2_TGACCA_L007_R1_003.fastq	DNA_2_TGACCA_L007_R2_003.fastq		RNA_2_GCCAAT_L008_R1_003.fastq	RNA_2_GCCAAT_L008_R2_003.fastq		cancer03.txt	cancer
-
