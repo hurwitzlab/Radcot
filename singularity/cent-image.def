@@ -39,7 +39,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     unzip centrifuge.zip
     mv centrifuge-1.0.3-beta centrifuge
 
-    git clone https://github.com/scottdaniel/centrifuge-patric.git
+    git clone https://github.com/hurwitzlab/centrifuge-patric.git
 
 	wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
     bash Miniconda3-latest-Linux-x86_64.sh -b -p /app/miniconda
@@ -49,33 +49,9 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 	conda install -y -c conda-forge plumbum
 	conda install -y -c bioconda biopython
     conda install -y pandas
-
-    #lightweight fastq splitter in C
-    #Changed my mind about this, editing fapslit.py was easier than using this
-#    git clone https://github.com/vasisht/fastq_splitter.git
-#    cd fastq_splitter
-#    gcc -o fastq_splitter fastq_splitter.c -lz
-#    sudo mv fastq_splitter /usr/local/bin
-
-    #
-    # Add CRAN to sources to get latest R
-    #
-    gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9
-    gpg -a --export E084DAB9 | apt-key add -
-    echo "deb http://cran.rstudio.com/bin/linux/ubuntu xenial/" | \
-        tee -a /etc/apt/sources.list
-    apt-get install -y r-base r-base-dev
-
-    cat << EOF > .Rprofile
-local({
-  r = getOption("repos")
-  r["CRAN"] = "http://mirrors.nics.utk.edu/cran/"
-  options(repos = r)
-})
-EOF
-    /usr/bin/Rscript /app/centrifuge-patric/scripts/install.r
-
-    #
+    conda install -y -c bioconda r-optparse 
+    conda install -y -c r r-ggplot2 r-plyr r-r.utils
+    
     # Mount points for TACC directories
     #
     mkdir /home1
