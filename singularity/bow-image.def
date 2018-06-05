@@ -63,4 +63,9 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
     #for ubuntu vbox vagrant
     #comment out once ready for deployment
-    mkdir /vagrant
+#    mkdir /vagrant
+
+    #for ua hpc
+    mkdir /extra
+    mkdir /rsgrps
+    mkdir -p /cm/shared
