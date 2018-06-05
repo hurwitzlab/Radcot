@@ -12,3 +12,8 @@ sort -t'	' -k3,3 -nr counts03.txt | head
 set="01 02 03"
 samtools view -h RNA_cancer_R1_sample_"$num".fastq.gz.bam | htseq-count -a 0 -t CDS -i product - ../gffs/all.RefSeq-CDS.gff > ../counts/cancer"$num".txt
 samtools view -h RNA_control_R1_sample_"$num".fastq.gz.bam | htseq-count -a 0 -t CDS -i product - ../gffs/all.RefSeq-CDS.gff > ../counts/control"$num".txt
+
+#SARTools
+Rscript template_script_DESeq2_CL.r -P testmouse -A scottdaniel -t /vagrant/counts/target.txt -r /vagrant/counts -v condition -c control
+#actually did this last step interactively based on template_script_DESeq2.r
+#but it SHOULD work non-interactively

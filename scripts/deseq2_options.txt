@@ -1,0 +1,5 @@
+--fitType "parametric"
+--typeTrans "VST"
+--workDir "/work/03859/sdaniel/stampede2/deseq_test"
+--projectName "CRC_mouse"
+--author "Scott G Daniel"
