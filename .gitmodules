@@ -1,0 +1,9 @@
+[submodule "01-centrifuge-patric"]
+    path = 01-centrifuge-patric
+    url = git@github.com:hurwitzlab/centrifuge-patric.git
+[submodule "02-bowtie-samtools"]
+    path = 02-bowtie-samtools
+    url = git@github.com:hurwitzlab/bowtie-samtools.git
+[submodule "03-count-deseq"]
+    path = 03-count-deseq
+    url = git@github.com:hurwitzlab/count-deseq.git
