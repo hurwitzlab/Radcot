@@ -3,11 +3,10 @@ OSVersion: trusty
 MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
 %environment
-    PATH="/Radcot/scripts:/media/miniconda/bin:$PATH"
+    PATH="/count-deseq/scripts:/media/miniconda/bin:$PATH"
 
 %runscript
-    echo "Run one of these using exec [singularity image] [script name]"
-    exec ls /Radcot/scripts
+    exec count-deseq.py "$@"
 
 %post
     echo "Hello from inside the container"
@@ -15,33 +14,48 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     #essential stuff
     apt update
     apt -y --force-yes install git sudo man vim build-essential wget unzip
-    
+#pkg-config 
     cd /tmp
 
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
     bash miniconda.sh -b -p /media/miniconda
-    PATH="/media/miniconda/bin:$PATH"
-    conda install -y -c bioconda htseq
-    conda install -y -c bioconda r-optparse 
-    conda install -y -c bioconda r-sartools
-    conda install -y -c r r-ggplot2 r-plyr r-r.utils 
+    
+    PATH="/count-deseq/scripts:/media/miniconda/bin:$PATH"
+    conda update -n base conda
+    conda config --add channels defaults; conda config --add channels conda-forge; conda config --add channels bioconda
+    conda install -y -c conda-forge r-optparse
+    conda install -y -c bioconda r-sartools=1.6.3 htseq pandas 
+    conda install -y -c r r-ggplot2 r-dplyr r-r.utils r-reshape2 r-rcolorbrewer 
 
-    #cleanup    
+#    conda install -y -c bioconda bioconductor-deseq2 bioconductor-edger bioconductor-genefilter r-knitr r-stringi r-markdown r-devtools # already installed with r-sartools
+
+#cleanup    
     conda clean -y --all
     rm -rf /tmp/*
     cd /
 
-    git clone https://github.com/hurwitzlab/Radcot.git
-    chmod +x /Radcot/scripts/*
+    git clone https://github.com/hurwitzlab/count-deseq.git
+    chmod +x /count-deseq/scripts/count-deseq.py
+
+#installing SARTools (wrapper for deseq2 / edgeR)
+#only have to do this if the conda repo is out-of-date with github repo
+#    sudo cp /bin/tar /bin/gtar
+#    R_LIBS="/media/miniconda/lib/R/library"
+#    /count-deseq/scripts/install.r
 
     #so we dont get those stupid perl warnings
     locale-gen en_US.UTF-8
 
-    #directory bind points for TACC
+    #directory bind points for TACC and HPC
+    #TACC
     mkdir /work
     mkdir /scratch
     mkdir /home1
+    #HPC
+    mkdir /extra
+    mkdir /rsgrps
+    mkdir -p /cm/shared
 
     #for ubuntu vbox vagrant
     #comment out once ready for deployment
-#    mkdir /vagrant
+    mkdir /vagrant
