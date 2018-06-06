@@ -103,7 +103,14 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-*.img
 *.out
 *.swp
 .Rhistory
+#singularity images
+*.img
+#log files
+*.out
+
+#vim swap files
+*.swp
+.DS_Store
