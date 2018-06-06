@@ -40,7 +40,7 @@ if [[ ! -d $STEPONE || ! -d $STEPTWO || ! -d $STEPTHREE ]]; then
 fi
 
 CENTIMG="$STEPONE/stampede/centrifuge-patric.img"
-BOWTIMG="$STEPTWO/stampede/bowtie-samtools.img"
+BOWTIMG="$STEPTWO/stampede/bowtie-sam.img"
 HTSQIMG="$STEPTHREE/stampede/count-deseq.img"
 
 if [[ ! -e $CENTIMG || ! -e $BOWTIMG || ! -e $HTSQIMG ]]; then
