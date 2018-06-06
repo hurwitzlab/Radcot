@@ -19,7 +19,7 @@ This is a monolithic program that combines the three steps
 1. Use https://www.imicrobe.us/#/apps to access the app with your [cyverse login](http://www.cyverse.org/create-account)
 OR
 1. `git clone https://github.com/hurwitzlab/radcot` on a linux system where you have admin rights
-2. `git pull --recurse-submodules` #Gets the individual steps
+2. `git pull && git submodule update --init --recursive` #Gets the individual steps
 3. Install [singularity](http://singularity.lbl.gov/all-releases)
 4. Build the singularity image in `/singularity/` by executing `make img`
 5. Upload all the files to a HPC with a slurm scheduler<sup>1</sup>
