@@ -43,6 +43,12 @@ CENTIMG="$STEPONE/stampede/centrifuge-patric.img"
 BOWTIMG="$STEPTWO/stampede/bowtie-samtools.img"
 HTSQIMG="$STEPTHREE/stampede/count-deseq.img"
 
+if [[ ! -e $CENTIMG || ! -e $BOWTIMG || ! -e $HTSQIMG ]]; then
+    echo "Need the singularity images to work!"
+    echo "Go into the /singularity dirs and \"make img\"!"
+    exit 1
+fi
+
 OUT_DIR="$PWD/radcot-out"
 #
 # Some needed functions
