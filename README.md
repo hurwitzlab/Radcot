@@ -21,8 +21,8 @@ OR
 1. `git clone https://github.com/hurwitzlab/radcot` on a linux system where you have admin rights
 2. `git pull && git submodule update --init --recursive` #Gets the individual steps
 3. Install [singularity](http://singularity.lbl.gov/all-releases)
-4. Build the singularity image in `/singularity/` by executing `make img`
-5. Upload all the files to a HPC with a slurm scheduler<sup>1</sup>
+4. Build the singularity image in each `/singularity/` by executing `make img`
+5. Upload all the files to an HPC with a slurm scheduler<sup>1</sup>
 6. Run the program with `sbatch run.sh [arguments]`
 
 ---
