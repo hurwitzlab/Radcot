@@ -29,19 +29,21 @@ set -u
 #Otherwise, you probably forgot to: #
 #git pull && git submodule update --init --recursive#
 
-STEPONE="../../01-centrifuge-patric"
-STEPTWO="../../02-bowtie-samtools"
-STEPTHREE="../../03-count-deseq"
+export PRJROOT=".."
+STEPONE="$PRJROOT/01-centrifuge-patric"
+STEPTWO="$PRJROOT/02-bowtie-samtools"
+STEPTHREE="$PRJROOT/03-count-deseq"
 
 if [[ ! -d $STEPONE || ! -d $STEPTWO || ! -d $STEPTHREE ]]; then
     echo "Can not find the required submodules"
     echo "You need to \"git pull && git submodule update --init --recursive\""
     exit 1
 fi
-MAINIMG="radcot.img"
-CENTIMG="$STEPONE/stampede/centrifuge-patric.img"
-BOWTIMG="$STEPTWO/stampede/bowtie-sam.img"
-HTSQIMG="$STEPTHREE/stampede/count-deseq.img"
+
+export MAINIMG="radcot.img"
+export CENTIMG="$STEPONE/stampede/centrifuge-patric.img"
+export BOWTIMG="$STEPTWO/stampede/bowtie-sam.img"
+export HTSQIMG="$STEPTHREE/stampede/count-deseq.img"
 
 if [[ ! -e $MAINIMG || ! -e $CENTIMG || ! -e $BOWTIMG || ! -e $HTSQIMG ]]; then
     echo "Need the singularity images to work!"
