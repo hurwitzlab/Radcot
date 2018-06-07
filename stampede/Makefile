@@ -1,3 +1,8 @@
+SING242 = /usr/local/bin/singularity #2.4.2-dist
+SING231 = /home/vagrant/bin/singularity #2.3.1-dist
+
+SINGULARITY = $(SING231)
+IMG_NAME = radcot.img
 APP = radcot-0.0.1
 EMAIL = scottdaniel@email.arizona.edu
 
