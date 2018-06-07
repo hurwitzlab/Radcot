@@ -39,9 +39,10 @@ and the options files
 and feeds them to each of the steps
 """
 
-import os, sys, argparse
+import os, sys, argparse, glob
 import plumbum
 import pandas as pd
+from pprint import pprint
 
 #WORK env var will be present on TACC
 #But may not be set when testing locally
@@ -61,6 +62,12 @@ parser = argparse.ArgumentParser(description=
         formatter_class=argparse.RawTextHelpFormatter)
 
 inputs = parser.add_argument_group('Required Inputs and Parameters')
+
+inputs.add_argument('-o', '--out-dir', 
+        dest='out_dir', metavar='DIRECTORY',
+        default=os.getcwd(),
+        help="Output directory to put all the\n"
+        "results in. [ Default = Current working dir ]")
 
 inputs.add_argument('-m', '--metadata', 
         dest='metadata', metavar='FILENAME',
@@ -212,5 +219,19 @@ def run_htseq(alignments, options):
 
     return Status
 
-#main
+##################
+# THE MAIN LOOP ##
+##################
 
+if __name__ == '__main__':
+   
+    #make the out dir if does not exist
+    if not os.path.isdir(args.out_dir):
+        os.mkdir(args.out_dir)
+
+    #DEBUG#
+    if args.debug:
+        print('all the arguments:' + os.linesep)
+        pprint(args); print()
+
+metadata = parse_metadata(args.metadata)
