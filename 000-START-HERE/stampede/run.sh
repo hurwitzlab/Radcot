@@ -38,12 +38,12 @@ if [[ ! -d $STEPONE || ! -d $STEPTWO || ! -d $STEPTHREE ]]; then
     echo "You need to \"git pull && git submodule update --init --recursive\""
     exit 1
 fi
-
+MAINIMG="radcot.img"
 CENTIMG="$STEPONE/stampede/centrifuge-patric.img"
 BOWTIMG="$STEPTWO/stampede/bowtie-sam.img"
 HTSQIMG="$STEPTHREE/stampede/count-deseq.img"
 
-if [[ ! -e $CENTIMG || ! -e $BOWTIMG || ! -e $HTSQIMG ]]; then
+if [[ ! -e $MAINIMG || ! -e $CENTIMG || ! -e $BOWTIMG || ! -e $HTSQIMG ]]; then
     echo "Need the singularity images to work!"
     echo "Go into the /singularity dirs and \"make img\"!"
     exit 1
@@ -58,7 +58,7 @@ function lc() {
 }
 
 function HELP() {
-    echo "https://github.com/hurwitzlab/Radcot/tree/master"
+    singularity run radcot.img -h
     exit 0
 }
 
@@ -66,6 +66,9 @@ function HELP() {
 # Show HELP if no arguments
 #
 [[ $# -eq 0 ]] && echo "Need some arguments" && HELP
+
+#else run the MASTER script
+singularity run radcot.img $@
 
 echo "Done, look in OUT_DIR \"$OUT_DIR\""
 echo "Comments to Scott Daniel <scottdaniel@email.arizona.edu>"
