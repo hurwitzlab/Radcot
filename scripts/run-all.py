@@ -47,7 +47,7 @@ from pprint import pprint
 #WORK env var will be present on TACC
 #But may not be set when testing locally
 if os.getenv('WORK') is None:
-    os.environ['WORK'] = './'
+    os.environ['WORK'] = './' #this is how we could set launcher variables, etc.
 
 ####################
 # ARGUMENTS ########
@@ -146,7 +146,19 @@ args = parser.parse_args()
 # GENERAL FUNCTIONS ###
 #######################
 
-#really basic checker, check that options file exists and then check that each line begins with a '-', then parse
+def module_load(module_name):
+     #load the module and print out all environmental variables
+    command = ['module load ' + module_name + ' && env']
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE)
+
+    #parse through each variable and set it in the working environment of this
+    #script, CAUTION: this will overrite anything there
+    for aline in proc.stdout:
+        (key, _, value) = aline.decode().partition("=")
+        os.environ[key] = value.rstrip('\n')
+    proc.communicate()
+
+#basic checker, check that options file exists and then check that each line begins with a '-', then parse
 def parse_options_text(options_txt_path):
     if not (os.path.isfile(options_txt_path)):
         print("Options text {} does not exist or is not a file\n".format(options_txt_path))
