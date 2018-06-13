@@ -17,7 +17,7 @@ export COUNT_DIR="$WORK/counts"
 export GFF_DIR="$wORK/gffs" #also has genome.fa
 ########################
 
-export OUT_DIR="$WORK/deseq_test"
+export OUT_DIR="$WORK/radcot_test"
 
 #export MY_PARAMRUN="$HOME/launcher/paramrun"
 
@@ -25,8 +25,4 @@ export OUT_DIR="$WORK/deseq_test"
 
 #-i "$WORK/genomes"
 
-bash run.sh -g $GFF_DIR/all.RefSeq.gff \
-    -b $BAMS_DIR
-    -t $COUNT_DIR/target.txt \
-    -o $OUT_DIR \
-    -p 4
+bash run.sh  
