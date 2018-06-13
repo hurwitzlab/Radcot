@@ -1,0 +1,3 @@
+-f fastq
+-a end-to-end
+-e sensitive
