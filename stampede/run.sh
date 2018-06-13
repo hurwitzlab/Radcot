@@ -12,10 +12,14 @@
 ###Uncomment when back on tacc#
 #echo "#### Current modules after app.json processing:"
 #module list 2>&1
-#echo "#### LOADING TACC-SINGULARITY ####"
-#module load tacc-singularity 2>&1
-#echo "#### LOADING LAUNCHER ####"
-#module load launcher 2>&1
+if test -n $MODULEPATH; then
+    echo "#### LOADING TACC-SINGULARITY ####"
+    module load tacc-singularity 2>&1
+    echo "#### LOADING LAUNCHER ####"
+    module load launcher 2>&1
+else
+    echo "No modulepath"
+fi
 #echo "#### Current modules after run.sh processing:"
 #module list 2>&1
 #
