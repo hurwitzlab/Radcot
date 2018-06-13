@@ -63,6 +63,14 @@ parser = argparse.ArgumentParser(description=
 
 inputs = parser.add_argument_group('Required Inputs and Parameters')
 
+inputs.add_argument('-i', '--in-dir',
+        dest='in_dir', metavar='DIRECTORY',
+        default=os.path.join(os.getenv('WORK'),'in'),
+        help="Input directory with all the dna / rna reads.\n"
+        "This will be prepended to each file specified in"
+        "the metadata file, so you don't need to specifiy it"
+        "there too. [ Default = $WORK/in ]")
+
 inputs.add_argument('-o', '--out-dir', 
         dest='out_dir', metavar='DIRECTORY',
         default=os.getcwd(),
@@ -76,7 +84,7 @@ inputs.add_argument('-m', '--metadata',
         "Use the metadata_template to start and DO NOT change\n"
         "headings. [ Default = metadata.txt ]")
 
-step_one = parser.add_argument_group('Step one option\'s files \(01-centrifuge-patric\)')
+step_one = parser.add_argument_group('Step one option\'s files (01-centrifuge-patric)')
 
 step_one.add_argument('-C', '--centrifuge-opts', 
         dest='cent_opts', metavar='FILENAME', 
@@ -97,7 +105,7 @@ step_one.add_argument('-P', '--PATRIC-opts',
         "[ Default = $WORK/PATRIC-opts.txt ]")
 
 step_two = parser.add_argument_group(
-        'Step two option\'s files \(02-bowtie-samtools\)')
+        'Step two option\'s files (02-bowtie-samtools)')
 
 step_two.add_argument('-B', '--bowtie2-opts', 
         dest='bowtie2_opts', metavar='FILENAME',
@@ -109,7 +117,7 @@ step_two.add_argument('-B', '--bowtie2-opts',
         "[ Default = $WORK/bowtie2-opts.txt ]")
 
 step_three = parser.add_argument_group(
-        'Step three option\'s files \(03-count-deseq\)')
+        'Step three option\'s files (03-count-deseq)')
 
 step_three.add_argument('-H', '--htseq-count-opts', 
         dest='htseq_count_opts', metavar='FILENAME',
