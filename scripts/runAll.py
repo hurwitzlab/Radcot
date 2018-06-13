@@ -67,8 +67,8 @@ inputs.add_argument('-i', '--in-dir',
         dest='in_dir', metavar='DIRECTORY',
         default=os.path.join(os.getenv('WORK'),'in'),
         help="Input directory with all the dna / rna reads.\n"
-        "This will be prepended to each file specified in"
-        "the metadata file, so you don't need to specifiy it"
+        "This will be prepended to each file specified in\n"
+        "the metadata file, so you don't need to specifiy it\n"
         "there too. [ Default = $WORK/in ]")
 
 inputs.add_argument('-o', '--out-dir', 
