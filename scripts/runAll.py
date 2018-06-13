@@ -148,8 +148,8 @@ args = parser.parse_args()
 
 def module_load(module_name):
      #load the module and print out all environmental variables
-    command = ['module load ' + module_name + ' && env']
-    proc = subprocess.Popen(command, stdout=subprocess.PIPE)
+    command = 'module load ' + module_name + ' && env'
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
 
     #parse through each variable and set it in the working environment of this
     #script, CAUTION: this will overrite anything there
