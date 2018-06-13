@@ -12,9 +12,7 @@
 #for local testing#####
 #if the singularity.conf is right, then /vagrant should be auto-shared
 export WORK="/vagrant"
-export BAMS_DIR="$WORK/bams"
-export COUNT_DIR="$WORK/counts"
-export GFF_DIR="$wORK/gffs" #also has genome.fa
+export INPUT_DIR="$WORK/in"
 ########################
 
 export OUT_DIR="$WORK/radcot_test"
@@ -25,4 +23,7 @@ export OUT_DIR="$WORK/radcot_test"
 
 #-i "$WORK/genomes"
 
-bash run.sh  
+bash run.sh -o $OUT_DIR \
+    -i $INPUT_DIR \
+    -m $WORK/subset_crc_mouse_metadata.txt \
+    --debug --threads 4
