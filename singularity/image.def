@@ -10,7 +10,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     PATH="/radcot/scripts:$PYTHONBIN:$PATH"
 
 %runscript
-    exec run-all.py "$@"
+    exec runAll.py "$@"
 
 %post
     echo "Hello from inside the container"
@@ -39,7 +39,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     cd /
 
     git clone https://github.com/hurwitzlab/radcot.git
-    chmod +x /radcot/scripts/run-all.py
+    chmod +x /radcot/scripts/runAll.py
 
     #so we dont get those stupid perl warnings
     locale-gen en_US.UTF-8
