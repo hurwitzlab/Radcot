@@ -40,7 +40,6 @@ and feeds them to each of the steps
 """
 
 import os, sys, argparse, glob
-import plumbum
 import pandas as pd
 from pprint import pprint
 
@@ -79,10 +78,10 @@ inputs.add_argument('-o', '--out-dir',
 
 inputs.add_argument('-m', '--metadata', 
         dest='metadata', metavar='FILENAME',
-        default='metadata.txt',
+        default=os.path.join(os.getenv('WORK'),'metadata.txt'),
         help="File containing file / sample information.\n"
         "Use the metadata_template to start and DO NOT change\n"
-        "headings. [ Default = metadata.txt ]")
+        "headings. [ Default = $WORK/metadata.txt ]")
 
 step_one = parser.add_argument_group('Step one option\'s files (01-centrifuge-patric)')
 
@@ -154,6 +153,10 @@ args = parser.parse_args()
 # GENERAL FUNCTIONS ###
 #######################
 
+#this loads modules on TACC or UA HPC
+#also has the side-effect of reloading the entire environment so CAUTION
+#currently, this isn't being used because we have the ../stampede/run.sh
+#that does the module loading for us
 def module_load(module_name):
      #load the module and print out all environmental variables
     command = 'module load ' + module_name + ' && env'
@@ -193,13 +196,14 @@ def error(msg):
 
 def execute(command):
 
-    #TODO: Figure out some way to replicate this with plumbum, since plumbum is easier?
     print('Executing {}'.format(command) + os.linesep)
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                shell=True)
     (stdout, stderr) = process.communicate()
     print(stdout.decode() + os.linesep)
     print(stderr.decode() + os.linesep)
+
+    return process.returncode
 
 #############################
 # Script-specific Functions #
@@ -219,13 +223,20 @@ def parse_metadata(metadata_file):
     return metadata_df
 
 def run_centrifuge(reads, options):
-    Status = ''
 
-    #do stuff
-    #pass the arguments to the run.sh of the 01 step?
-    #or pass them to the singularity image?
+    options_string = parse_options_text(options)
 
-    return Status
+    centrifuge = os.path.join(os.getenv('STEPONE'),'stampede/run.sh')
+
+    command = 'bash {} -q {} -o {} {}'.format(centrifuge, args.in_dir,
+            args.out_dir, options_string)
+
+    returncode = execute(command)
+
+    if returncode == 0:
+        print('{} ran sucessfully, continuing...'.format(centrifuge))
+    else:
+        error('{} failed, exiting'.format(centrifuge))
 
 def run_rna_align(reads, options):
     Status = ''
@@ -255,5 +266,14 @@ if __name__ == '__main__':
     if args.debug:
         print('all the arguments:' + os.linesep)
         pprint(args); print()
-
+    
+    #parse metadata
     metadata = parse_metadata(args.metadata)
+
+    #DEBUG: parse all options
+    if args.debug:
+        for key in filter(lambda key: key.endswith('opts'), vars(args)):
+            parse_options_text(vars(args)[key])
+    
+    #Run centrifuge
+    run_centrifuge(None, args.cent_opts)
