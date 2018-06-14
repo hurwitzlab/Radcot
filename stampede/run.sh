@@ -34,9 +34,9 @@ set -u
 #git pull && git submodule update --init --recursive#
 
 export PRJROOT=".."
-STEPONE="$PRJROOT/01-centrifuge-patric"
-STEPTWO="$PRJROOT/02-bowtie-samtools"
-STEPTHREE="$PRJROOT/03-count-deseq"
+export STEPONE="$PRJROOT/01-centrifuge-patric"
+export STEPTWO="$PRJROOT/02-bowtie-samtools"
+export STEPTHREE="$PRJROOT/03-count-deseq"
 
 if [[ ! -d $STEPONE || ! -d $STEPTWO || ! -d $STEPTHREE ]]; then
     echo "Can not find the required submodules"
