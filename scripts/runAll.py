@@ -222,6 +222,8 @@ def run_centrifuge(reads, options):
     Status = ''
 
     #do stuff
+    #pass the arguments to the run.sh of the 01 step?
+    #or pass them to the singularity image?
 
     return Status
 
@@ -254,4 +256,4 @@ if __name__ == '__main__':
         print('all the arguments:' + os.linesep)
         pprint(args); print()
 
-metadata = parse_metadata(args.metadata)
+    metadata = parse_metadata(args.metadata)
