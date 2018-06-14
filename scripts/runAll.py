@@ -39,7 +39,7 @@ and the options files
 and feeds them to each of the steps
 """
 
-import os, sys, argparse, glob
+import os, sys, argparse, glob, subprocess
 import pandas as pd
 from pprint import pprint
 
