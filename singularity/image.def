@@ -29,14 +29,6 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     PATH="$PYTHONBIN:$PATH"
     DEFAULTBIN="/usr/local/bin"
     
-    VER=2.3.1
-    wget https://github.com/singularityware/singularity/releases/download/$VER/singularity-$VER.tar.gz
-    tar xvf singularity-$VER.tar.gz
-    cd singularity-$VER
-    ./configure --prefix=/usr/local
-    make
-    sudo make install
-
     conda update -n base conda
     conda config --add channels defaults; conda config --add channels conda-forge; conda config --add channels bioconda
     conda install -y plumbum pandas
@@ -48,7 +40,6 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
     git clone https://github.com/hurwitzlab/radcot.git
     cd radcot
-#    git pull && git submodule update --init --recursive
     chmod +x scripts/*
 #    chmod +x /01-centrifuge-patric/scripts/*
 #    chmod +x /02-bowtie-samtools/scripts/*
