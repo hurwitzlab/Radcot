@@ -233,7 +233,7 @@ def run_centrifuge(reads, options):
 
     centrifuge = os.getenv('CENTIMG')
 
-    command = 'singularity exec {} run_centrifuge.py \
+    command = 'sudo singularity exec {} run_centrifuge.py \
             -q {} -o {} {}'.format(centrifuge, args.in_dir,
             args.out_dir, options_string)
 

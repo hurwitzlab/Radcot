@@ -33,7 +33,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     wget https://github.com/singularityware/singularity/releases/download/$VER/singularity-$VER.tar.gz
     tar xvf singularity-$VER.tar.gz
     cd singularity-$VER
-    ./configure --prefix=/usr/local --sysconfdir=/etc
+    ./configure --prefix=/usr/local
     make
     sudo make install
 
@@ -47,8 +47,13 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     cd /
 
     git clone https://github.com/hurwitzlab/radcot.git
-    chmod +x /radcot/scripts/runAll.py
-
+    cd radcot
+#    git pull && git submodule update --init --recursive
+    chmod +x scripts/*
+#    chmod +x /01-centrifuge-patric/scripts/*
+#    chmod +x /02-bowtie-samtools/scripts/*
+#    chmod +x /03-count-deseq/*
+#
     #so we dont get those stupid perl warnings
     locale-gen en_US.UTF-8
 
