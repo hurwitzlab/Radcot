@@ -1,39 +1,81 @@
 #!/bin/bash
 
-#SBATCH -J cntrfge 
+#SBATCH -J radcot
 #SBATCH -A iPlant-Collabs 
-#SBATCH -N 1
+#SBATCH -N 12
 #SBATCH -n 1
 #SBATCH -t 24:00:00
-#SBATCH -p skx-normal
+#SBATCH -p normal
 
-# Author: Ken Youens-Clark <kyclark@email.arizona.edu>
+# Author: Scott G. Daniel <scottdaniel@email.arizona.edu>
 
-module load tacc-singularity 
+###Uncomment when back on tacc#
+#echo "#### Current modules after app.json processing:"
+#module list 2>&1
+if [[ $MODULEPATH ]]; then
+    echo "#### LOADING TACC-SINGULARITY ####"
+    module load tacc-singularity 2>&1
+    echo "#### LOADING LAUNCHER ####"
+    module load launcher 2>&1
+else
+    echo "No modulepath"
+fi
+#echo "#### Current modules after run.sh processing:"
+#module list 2>&1
+#
+# Set up defaults for inputs, constants
+#
 
+#check for unset (i.e. [blank]) variables
 set -u
 
-OUT_DIR="$PWD/centrifuge-out"
-INDEX_DIR="/work/05066/imicrobe/iplantc.org/data/centrifuge-indexes"
-IMG="/work/05066/imicrobe/singularity/centrifuge-1.0.4.img"
-RUN_CENTRIFUGE="singularity exec $IMG run_centrifuge.py"
+#If this repo is properly checked out, this will work#
+#Otherwise, you probably forgot to: #
+#git pull && git submodule update --init --recursive#
 
-if [[ ! -e "$IMG" ]]; then
-    echo "Missing IMG \"$IMG\""
+export PRJROOT=".."
+export STEPONE="$PRJROOT/01-centrifuge-patric"
+export STEPTWO="$PRJROOT/02-bowtie-samtools"
+export STEPTHREE="$PRJROOT/03-count-deseq"
+
+if [[ ! -d $STEPONE || ! -d $STEPTWO || ! -d $STEPTHREE ]]; then
+    echo "Can not find the required submodules"
+    echo "You need to \"git pull && git submodule update --init --recursive\""
     exit 1
 fi
+
+export MAINIMG="radcot.img"
+export CENTIMG="$STEPONE/stampede/centrifuge-patric.img"
+export BOWTIMG="$STEPTWO/stampede/bowtie-sam.img"
+export HTSQIMG="$STEPTHREE/stampede/count-deseq.img"
+
+if [[ ! -e $MAINIMG || ! -e $CENTIMG || ! -e $BOWTIMG || ! -e $HTSQIMG ]]; then
+    echo "Need the singularity images to work!"
+    echo "Go into the /singularity dirs and \"make img\"!"
+    exit 1
+fi
+
+OUT_DIR="$PWD/radcot-out"
+#
+# Some needed functions
+#
+function lc() { 
+    wc -l "$1" | cut -d ' ' -f 1 
+}
+
+function HELP() {
+    singularity run radcot.img -h
+    exit 0
+}
 
 #
 # Show HELP if no arguments
 #
-[[ $# -eq 0 ]] && $RUN_CENTRIFUGE -h
+[[ $# -eq 0 ]] && echo "Need some arguments" && HELP
 
-#
-# Verify existence of INDEX_DIR, chosen INDEX
-#
-if [[ ! -d "$INDEX_DIR" ]]; then
-    echo "Cannot find INDEX_DIR \"$INDEX_DIR\""
-    exit 1
-fi
+#else run the MASTER script
+singularity run radcot.img $@
 
-$RUN_CENTRIFUGE -I "$INDEX_DIR" "$@"
+echo "Done, look in OUT_DIR \"$OUT_DIR\""
+echo "Comments to Scott Daniel <scottdaniel@email.arizona.edu>"
+
