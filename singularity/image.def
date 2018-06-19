@@ -24,12 +24,11 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         build-essential wget unzip perl curl gdebi-core zip \
         locales libcurl4-openssl-dev libssl-dev cpanminus parallel \
         libtbb-dev
+    locale-gen en_US.UTF-8
 
+#    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
     mkdir /root/.parallel
     touch /root/.parallel/will-cite
-
-    # Clean up
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
     # Put everything into $APP_DIR
     #
@@ -55,7 +54,9 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     conda update -n base conda
     conda config --add channels defaults; conda config --add channels conda-forge; conda config --add channels bioconda
     conda install -y -c conda-forge plumbum r-optparse
+    conda clean -y --all
 	conda install -y -c bioconda biopython centrifuge samtools bowtie2 r-sartools=1.6.3 htseq pandas
+    conda clean -y --all
     conda install -y -c r r-ggplot2 r-plyr r-r.utils r-reshape2 r-rcolorbrewer
 
 #cleanup    
@@ -66,9 +67,6 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     git clone https://github.com/hurwitzlab/radcot.git
     cd radcot
     chmod +x scripts/*
-
-    #so we dont get those stupid perl warnings
-    locale-gen en_US.UTF-8
 
     #directory bind points for TACC and HPC
     #TACC
