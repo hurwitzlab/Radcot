@@ -1,0 +1,63 @@
+BootStrap: debootstrap
+OSVersion: xenial
+MirrorURL: http://us.archive.ubuntu.com/ubuntu/
+
+%environment
+    CONDA="/media/miniconda"
+    PYTHONPATH="$CONDA/pkgs"
+    PYTHONBIN="$CONDA/bin"
+    PYTHON="$CONDABIN/python"
+    PATH="/radcot/scripts:$PYTHONBIN:$PATH"
+
+%runscript
+    exec runAll.py "$@"
+
+%post
+    echo "Hello from inside the container"
+    sed -i 's/$/ universe/' /etc/apt/sources.list
+    #essential stuff
+    apt update
+    apt -y --allow-downgrades install git sudo man vim build-essential wget unzip
+    cd /tmp
+
+    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    bash miniconda.sh -b -p /media/miniconda
+    CONDA="/media/miniconda"
+    PYTHONPATH="$CONDA/pkgs"
+    PYTHONBIN="$CONDA/bin"
+    PYTHON="$CONDABIN/python"
+    PATH="$PYTHONBIN:$PATH"
+    DEFAULTBIN="/usr/local/bin"
+    
+    conda update -n base conda
+    conda config --add channels defaults; conda config --add channels conda-forge; conda config --add channels bioconda
+    conda install -y plumbum pandas
+
+#cleanup    
+    conda clean -y --all
+    rm -rf /tmp/*
+    cd /
+
+    git clone https://github.com/hurwitzlab/radcot.git
+    cd radcot
+    chmod +x scripts/*
+#    chmod +x /01-centrifuge-patric/scripts/*
+#    chmod +x /02-bowtie-samtools/scripts/*
+#    chmod +x /03-count-deseq/*
+#
+    #so we dont get those stupid perl warnings
+    locale-gen en_US.UTF-8
+
+    #directory bind points for TACC and HPC
+    #TACC
+    mkdir /work
+    mkdir /scratch
+    mkdir /home1
+    #HPC
+    mkdir /extra
+    mkdir /rsgrps
+    mkdir -p /cm/shared
+
+    #for ubuntu vbox vagrant
+    #comment out once ready for deployment
+    mkdir /vagrant

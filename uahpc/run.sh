@@ -1,3 +1,5 @@
+#maybe some day this will be on uahpc too
+
 #!/bin/bash
 
 #SBATCH -J htseq

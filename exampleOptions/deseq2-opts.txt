@@ -1,0 +1,4 @@
+--fitType "parametric"
+--typeTrans "VST"
+--projectName "CRC_mouse"
+--author "Scott G Daniel"
