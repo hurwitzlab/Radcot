@@ -115,7 +115,12 @@ def download_genomes(filtered_list):
     #                        os.remove(patricID + '.fna' )
                     else:
                         print('There was no RefSeq.gff for genome_id {}, therfore deleting the genome'.format(patricID))
-                        [os.remove(x) for x in glob.glob(patricID + '*')]
+                        try: 
+                            [os.remove(x) for x in glob.glob(patricID + '*')]
+                        except FileNotFoundError as err:
+                            print("FileNotFoundError error: {0}".format(err))
+                            print("Assuming file is already deleted, continuing...")
+
 
                 elif args.annotation_type == 'patric':
                     print('Getting PATRIC genome_id {}'.format(patricID))
