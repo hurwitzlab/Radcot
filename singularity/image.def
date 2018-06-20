@@ -3,11 +3,12 @@ OSVersion: xenial
 MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
 %environment
-    CONDA="/media/miniconda"
-    PYTHONPATH="$CONDA/pkgs"
+    CONDA="/app/miniconda"
+    export PYTHONPATH="$CONDA/pkgs"
     PYTHONBIN="$CONDA/bin"
-    PYTHON="$CONDABIN/python"
+    export PYTHON="$CONDABIN/python"
     PATH="/radcot/scripts:$PYTHONBIN:$PATH"
+    export LD_LIBRARY_PATH=/app
 
 %runscript
     exec runAll.py "$@"
@@ -15,23 +16,48 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 %post
     echo "Hello from inside the container"
     sed -i 's/$/ universe/' /etc/apt/sources.list
-    #essential stuff
-    apt update
-    apt -y --allow-downgrades install git sudo man vim build-essential wget unzip
+    apt-get update
+    apt-get upgrade
+
+	#essential stuff
+    apt -y --allow-downgrades install git sudo man vim \
+        build-essential wget unzip perl curl gdebi-core zip \
+        locales libcurl4-openssl-dev libssl-dev cpanminus parallel \
+        libtbb-dev
+    locale-gen en_US.UTF-8
+
+#    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    mkdir /root/.parallel
+    touch /root/.parallel/will-cite
+
+    # Put everything into $APP_DIR
+    #
+    export APP_DIR=/app
+    mkdir -p $APP_DIR
     cd /tmp
 
-    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-    bash miniconda.sh -b -p /media/miniconda
-    CONDA="/media/miniconda"
+    wget https://github.com/PATRIC3/PATRIC-distribution/releases/download/1.018/patric-cli-1.018.deb
+    sudo gdebi -n patric-cli-1.018.deb
+    cpanm install Class::Accessor
+    git clone https://github.com/SEEDtk/RASTtk.git
+    cp -r -n RASTtk/lib/* /usr/share/patric-cli/deployment/lib/
+
+    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /app/miniconda
+    sudo ln -s /app/miniconda/bin/python /usr/bin/python
+    CONDA="/app/miniconda"
     PYTHONPATH="$CONDA/pkgs"
     PYTHONBIN="$CONDA/bin"
     PYTHON="$CONDABIN/python"
     PATH="$PYTHONBIN:$PATH"
-    DEFAULTBIN="/usr/local/bin"
     
     conda update -n base conda
     conda config --add channels defaults; conda config --add channels conda-forge; conda config --add channels bioconda
-    conda install -y plumbum pandas
+    conda install -y -c conda-forge plumbum r-optparse
+    conda clean -y --all
+	conda install -y -c bioconda biopython centrifuge samtools bowtie2 r-sartools=1.6.3 htseq pandas
+    conda clean -y --all
+    conda install -y -c r r-ggplot2 r-plyr r-r.utils r-reshape2 r-rcolorbrewer
 
 #cleanup    
     conda clean -y --all
@@ -41,12 +67,6 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     git clone https://github.com/hurwitzlab/radcot.git
     cd radcot
     chmod +x scripts/*
-#    chmod +x /01-centrifuge-patric/scripts/*
-#    chmod +x /02-bowtie-samtools/scripts/*
-#    chmod +x /03-count-deseq/*
-#
-    #so we dont get those stupid perl warnings
-    locale-gen en_US.UTF-8
 
     #directory bind points for TACC and HPC
     #TACC
