@@ -261,7 +261,7 @@ def run_cent_paired(file_format, paired_reads, exclude_ids,
     return list(filter(os.path.isfile,
                        glob.iglob(reports_dir + '/**', recursive=True)))
 
-def get_genomes(reports_dir, out_dir, min_abundance, annotation_type):
+def get_genomes(reports_dir, out_dir, min_abundance, annotation_type, procs):
     """Get genomes from PATRIC"""
 
     genome_dir = os.path.join(out_dir, 'genomes')
@@ -270,11 +270,12 @@ def get_genomes(reports_dir, out_dir, min_abundance, annotation_type):
         os.makedirs(genome_dir)
     
     jobfile = tmp.NamedTemporaryFile(delete=False, mode='wt')
-    
-    tmpl='cfuge_to_genome.py --report {} --output {} --min_abundance {} --annotation_type {}'
+    bin_dir = os.path.dirname(os.path.realpath(__file__))
+    tmpl='{}/cfuge_to_genome.py --report {} --output {} --min_abundance {} --annotation_type {}'
 
     for report in glob.iglob(reports_dir + '/*.tsv'):
-        jobfile.write(tmpl.format(report,
+        jobfile.write(tmpl.format(bin_dir,
+                                  report,
                                   genome_dir,
                                   min_abundance,
                                   annotation_type))
@@ -526,7 +527,8 @@ def main():
     get_genomes(reports_dir=reports_dir,
                             out_dir=out_dir,
                             min_abundance=min_abundance,
-                            annotation_type=annotation_type)
+                            annotation_type=annotation_type,
+                            procs=args.procs)
 
         
 # --------------------------------------------------
