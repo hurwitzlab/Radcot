@@ -248,11 +248,23 @@ def parse_metadata(metadata_file):
 
     return metadata_df
 
+def parse_reads(panda_df, panda_column):
+    """Simple function that takes a panda column
+    and spits out a string that centrifuge and bowtie2 like"""
+    read_full_paths = []
+
+    for read in list(panda_df[panda_column]):
+        read_full_paths.append(args.in_dir,read)
+
+    read_string = ','.join(read_full_paths)
+
+    return read_string
+
 def run_centrifuge(reads, cent_opts, patric_opts):
 
     options_string = parse_options_text(cent_opts) + parse_options_text(patric_opts)
 
-    centrifuge = os.getenv('IMG')
+    sing_img = os.getenv('IMG')
     
     #If we are using this from the metadata txt
     #we will have either paired + unpaired
@@ -263,30 +275,52 @@ def run_centrifuge(reads, cent_opts, patric_opts):
     r_reads = ''
     u_reads = ''
 
-    f_reads = parse_reads('dna_forward')
-    r_reads = parse_reads('dna_reverse')
-    u_reads = parse_reads('dna_unpaired')
+    f_reads = parse_reads(metadata, 'dna_forward')
+    r_reads = parse_reads(metadata, 'dna_reverse')
+    u_reads = parse_reads(metadata, 'dna_unpaired')
 
     if f_reads and r_reads and not u_reads:
-        pass
+
+        command = 'singularity exec {} run_centrifuge.py \
+            -1 {} -2 {} -o {} {}'.format(sing_img, f_reads,
+                    r_reads, args.out_dir, options_string)
+
+        returncode = execute(command)
+
+        if returncode == 0:
+            print('{} ran sucessfully, continuing...'.format(sing_img))
+        else:
+            error('{} failed, exiting'.format(sing_img))
+
     elif f_reads and r_reads and u_reads:
-        pass
+        
+        command = 'singularity exec {} run_centrifuge.py \
+            -1 {} -2 {} -U -o {} {}'.format(sing_img, f_reads,
+                    r_reads, u_reads, args.out_dir, options_string)
+
+        returncode = execute(command)
+
+        if returncode == 0:
+            print('{} ran sucessfully, continuing...'.format(sing_img))
+        else:
+            error('{} failed, exiting'.format(sing_img))
+
     elif u_reads and not f_reads or r_reads:
-        pass
+
+        command = 'singularity exec {} run_centrifuge.py \
+            -U {} -o {} {}'.format(sing_img, u_reads,
+                    args.out_dir, options_string)
+
+        returncode = execute(command)
+
+        if returncode == 0:
+            print('{} ran sucessfully, continuing...'.format(sing_img))
+        else:
+            error('{} failed, exiting'.format(sing_img))
+
     else:
         error('No Reads!')
-
-    command = 'singularity exec {} run_centrifuge.py \
-            -q {} -o {} {}'.format(centrifuge, args.in_dir,
-            args.out_dir, options_string)
-
-    returncode = execute(command)
-
-    if returncode == 0:
-        print('{} ran sucessfully, continuing...'.format(centrifuge))
-    else:
-        error('{} failed, exiting'.format(centrifuge))
-
+    
 def run_rna_align(reads, options):
     Status = ''
 
