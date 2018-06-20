@@ -26,4 +26,4 @@ shell:
 #	sudo $(SINGULARITY) shell $(IMG_NAME)
 
 scp:
-	scp $(IMG_NAME) stampede2:/work/03859/sdaniel/stampede2/radcot/scripts/
+	scp $(IMG_NAME) stampede2:/work/03859/sdaniel/stampede2/radcot/stampede/
