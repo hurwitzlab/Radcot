@@ -271,7 +271,7 @@ def get_genomes(reports_dir, out_dir, min_abundance, annotation_type, procs):
     
     jobfile = tmp.NamedTemporaryFile(delete=False, mode='wt')
     bin_dir = os.path.dirname(os.path.realpath(__file__))
-    tmpl='{}/cfuge_to_genome.py --report {} --output {} --min_abundance {} --annotation_type {}'
+    tmpl='{}/cfuge_to_genome.py --report {} --output {} --min_abundance {} --annotation_type {}\n'
 
     for report in glob.iglob(reports_dir + '/*.tsv'):
         jobfile.write(tmpl.format(bin_dir,
