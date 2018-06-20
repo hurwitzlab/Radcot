@@ -39,6 +39,11 @@ and the options files
 and feeds them to each of the steps
 """
 
+#important env vars
+#CENTIMG="centrifuge-patric.img"
+#BOWTIMG="bowtie-sam.img"
+#HTSQIMG="count-deseq.img"
+
 import os, sys, argparse, glob, subprocess
 import pandas as pd
 from pprint import pprint
@@ -226,9 +231,10 @@ def run_centrifuge(reads, options):
 
     options_string = parse_options_text(options)
 
-    centrifuge = os.path.join(os.getenv('STEPONE'),'stampede/run.sh')
+    centrifuge = os.getenv('CENTIMG')
 
-    command = 'bash {} -q {} -o {} {}'.format(centrifuge, args.in_dir,
+    command = 'sudo singularity exec {} run_centrifuge.py \
+            -q {} -o {} {}'.format(centrifuge, args.in_dir,
             args.out_dir, options_string)
 
     returncode = execute(command)

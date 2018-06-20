@@ -33,21 +33,23 @@ set -u
 #Otherwise, you probably forgot to: #
 #git pull && git submodule update --init --recursive#
 
-export PRJROOT=".."
-export STEPONE="$PRJROOT/01-centrifuge-patric"
-export STEPTWO="$PRJROOT/02-bowtie-samtools"
-export STEPTHREE="$PRJROOT/03-count-deseq"
+#export PRJROOT=".."
+#export STEPONE="$PRJROOT/01-centrifuge-patric"
+#export STEPTWO="$PRJROOT/02-bowtie-samtools"
+#export STEPTHREE="$PRJROOT/03-count-deseq"
+#
+#if [[ ! -d $STEPONE || ! -d $STEPTWO || ! -d $STEPTHREE ]]; then
+#    echo "Can not find the required submodules"
+#    echo "You need to \"git pull && git submodule update --init --recursive\""
+#    exit 1
+#fi
 
-if [[ ! -d $STEPONE || ! -d $STEPTWO || ! -d $STEPTHREE ]]; then
-    echo "Can not find the required submodules"
-    echo "You need to \"git pull && git submodule update --init --recursive\""
-    exit 1
-fi
-
+#simplified by putting all images in one dir
+#but you still have to build them from the submodule's "singularity/" dirs
 export MAINIMG="radcot.img"
-export CENTIMG="$STEPONE/stampede/centrifuge-patric.img"
-export BOWTIMG="$STEPTWO/stampede/bowtie-sam.img"
-export HTSQIMG="$STEPTHREE/stampede/count-deseq.img"
+export CENTIMG="centrifuge-patric.img"
+export BOWTIMG="bowtie-sam.img"
+export HTSQIMG="count-deseq.img"
 
 if [[ ! -e $MAINIMG || ! -e $CENTIMG || ! -e $BOWTIMG || ! -e $HTSQIMG ]]; then
     echo "Need the singularity images to work!"
