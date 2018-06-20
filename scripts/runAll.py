@@ -252,11 +252,16 @@ def parse_reads(panda_df, panda_column):
     """Simple function that takes a panda column
     and spits out a string that centrifuge and bowtie2 like"""
     read_full_paths = []
+    read_string = ''
 
     for read in list(panda_df[panda_column]):
-        read_full_paths.append(args.in_dir,read)
-
-    read_string = ','.join(read_full_paths)
+        if type(read) == float: #if the field is empty, pandas returns a float
+            continue
+        else:
+            read_full_paths.append(os.path.join(args.in_dir,read))
+    
+    if len(read_full_paths) > 0: #return an empty string if nothing in the column
+        read_string = ','.join(read_full_paths)
 
     return read_string
 
@@ -276,6 +281,11 @@ def run_centrifuge(reads, cent_opts, patric_opts):
     f_reads = parse_reads(metadata, 'dna_forward')
     r_reads = parse_reads(metadata, 'dna_reverse')
     u_reads = parse_reads(metadata, 'dna_unpaired')
+
+    if args.debug:
+        print("These are the reads: forward {}\n".format(f_reads))
+        print("reverse {}\n".format(r_reads))
+        print("and unpaired {}\n".format(u_reads))
 
     bin_dir = os.path.dirname(os.path.realpath(__file__))
     cent_script = os.path.join(bin_dir, 'run_centrifuge.py')
@@ -352,9 +362,9 @@ if __name__ == '__main__':
     metadata = parse_metadata(args.metadata)
 
     #DEBUG: parse all options
-    if args.debug:
-        for key in filter(lambda key: key.endswith('opts'), vars(args)):
-            parse_options_text(vars(args)[key])
+#    if args.debug:
+#        for key in filter(lambda key: key.endswith('opts'), vars(args)):
+#            parse_options_text(vars(args)[key])
     
     #Run centrifuge
     if not args.skip_cent:
