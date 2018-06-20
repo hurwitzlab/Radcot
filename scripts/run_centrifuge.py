@@ -15,7 +15,7 @@ from pprint import pprint
 def get_args():
     """get args"""
     parser = argparse.ArgumentParser(
-        description='Argparse Python script',
+        description='Options for run_centrifuge.py',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('-q', '--query',
@@ -92,6 +92,17 @@ def get_args():
                         metavar='int',
                         type=int,
                         default=1)
+    
+    parser.add_argument("-m", "--min_abundance", action="store", \
+            help="Minimum abundance needed to download a species\' genome", \
+            default='.01', type=float)
+
+    parser.add_argument("-a", "--annotation_type", \
+            default="refseq", choices=['refseq','patric'], \
+            help="Which type of annotation to get: refseq or patric. " \
+            "NOTE: Choosing \"refseq\" will discard genomes that only have PATRIC annotaion. " \
+            "NOTE2: patric annotations will generally include refseq genes. " \
+            "Default is \"refseq\" as it is generally better curated.")
 
     return parser.parse_args()
 
@@ -250,6 +261,28 @@ def run_cent_paired(file_format, paired_reads, exclude_ids,
     return list(filter(os.path.isfile,
                        glob.iglob(reports_dir + '/**', recursive=True)))
 
+def get_genomes(reports_dir, out_dir, min_abundance, annotation_type):
+    """Get genomes from PATRIC"""
+
+    genome_dir = os.path.join(out_dir, 'genomes')
+
+    if not os.path.isdir(genome_dir):
+        os.makedirs(genome_dir)
+    
+    jobfile = tmp.NamedTemporaryFile(delete=False, mode='wt')
+    
+    tmpl='cfuge_to_genome.py --report {} --output {} --min_abundance {} --annotation_type {}'
+
+    for report in glob.iglob(reports_dir + '/*.tsv'):
+        jobfile.write(tmpl.format(report,
+                                  genome_dir,
+                                  min_abundance,
+                                  annotation_type))
+
+    jobfile.close()
+
+    if not run_job_file(jobfile=jobfile.name, msg='Getting genomes', procs=procs):
+        die()
 
 # --------------------------------------------------
 def get_excluded_tax(ids):
@@ -478,8 +511,8 @@ def main():
         warn('Reports dir: {}'.format(reports_dir))
         fig_dir = make_bubble(collapse_dir=reports_dir, out_dir=out_dir)
 
-        print('Done, reports in "{}", figures in "{}"'.format(reports_dir,
-                                                              fig_dir))
+#        print('Done, reports in "{}", figures in "{}"'.format(reports_dir,
+#                                                              fig_dir))
 
     else:
         die('Need a query or paired forward and reverse reads\n' +
@@ -487,6 +520,13 @@ def main():
                 'forward {}\n'.format(args.forward) +
                 'reverse {}\n'.format(args.reverse) +
                 'unpaired {}\n'.format(args.unpaired))
+    #getting genomes using cfuge_to_genome.py 
+    min_abundance = args.min_abundance
+    annotation_type = args.annotation_type
+    get_genomes(reports_dir=reports_dir,
+                            out_dir=out_dir,
+                            min_abundance=min_abundance,
+                            annotation_type=annotation_type)
 
         
 # --------------------------------------------------
