@@ -264,8 +264,6 @@ def run_centrifuge(reads, cent_opts, patric_opts):
 
     options_string = parse_options_text(cent_opts) + parse_options_text(patric_opts)
 
-    sing_img = os.getenv('IMG')
-    
     #If we are using this from the metadata txt
     #we will have either paired + unpaired
     #or just paired
@@ -279,44 +277,44 @@ def run_centrifuge(reads, cent_opts, patric_opts):
     r_reads = parse_reads(metadata, 'dna_reverse')
     u_reads = parse_reads(metadata, 'dna_unpaired')
 
+    bin_dir = os.path.dirname(os.path.realpath(__file__))
+    cent_script = os.path.join(bin_dir, 'run_centrifuge.py')
+
     if f_reads and r_reads and not u_reads:
 
-        command = 'singularity exec {} run_centrifuge.py \
-            -1 {} -2 {} -o {} {}'.format(sing_img, f_reads,
+        command = '{} -1 {} -2 {} -o {} {}'.format(cent_script, f_reads,
                     r_reads, args.out_dir, options_string)
 
         returncode = execute(command)
 
         if returncode == 0:
-            print('{} ran sucessfully, continuing...'.format(sing_img))
+            print('{} ran sucessfully, continuing...'.format(cent_script))
         else:
-            error('{} failed, exiting'.format(sing_img))
+            error('{} failed, exiting'.format(cent_script))
 
     elif f_reads and r_reads and u_reads:
         
-        command = 'singularity exec {} run_centrifuge.py \
-            -1 {} -2 {} -U -o {} {}'.format(sing_img, f_reads,
+        command = '{} -1 {} -2 {} -U -o {} {}'.format(cent_script, f_reads,
                     r_reads, u_reads, args.out_dir, options_string)
 
         returncode = execute(command)
 
         if returncode == 0:
-            print('{} ran sucessfully, continuing...'.format(sing_img))
+            print('{} ran sucessfully, continuing...'.format(cent_script))
         else:
-            error('{} failed, exiting'.format(sing_img))
+            error('{} failed, exiting'.format(cent_script))
 
     elif u_reads and not f_reads or r_reads:
 
-        command = 'singularity exec {} run_centrifuge.py \
-            -U {} -o {} {}'.format(sing_img, u_reads,
+        command = '{} -U {} -o {} {}'.format(cent_script, u_reads,
                     args.out_dir, options_string)
 
         returncode = execute(command)
 
         if returncode == 0:
-            print('{} ran sucessfully, continuing...'.format(sing_img))
+            print('{} ran sucessfully, continuing...'.format(cent_script))
         else:
-            error('{} failed, exiting'.format(sing_img))
+            error('{} failed, exiting'.format(cent_script))
 
     else:
         error('No Reads!')
