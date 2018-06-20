@@ -99,14 +99,14 @@ step_one.add_argument('-C', '--centrifuge-opts',
         "-o2 option2\n"
         "[ Default = $WORK/centrifuge-opts.txt ]")
 
-step_one.add_argument('-P', '--PATRIC-opts', 
+step_one.add_argument('-p', '--patric-opts', 
         dest='patric_opts', metavar='FILENAME', 
-        default=os.path.join(os.getenv('WORK'),'PATRIC-opts.txt'),
+        default=os.path.join(os.getenv('WORK'),'patric-opts.txt'),
         help="File with additional options for getting genomes from patric\n"
         "Please format your options like so:\n"
         "-o1 option1\n"
         "-o2 option2\n"
-        "[ Default = $WORK/PATRIC-opts.txt ]")
+        "[ Default = $WORK/patric-opts.txt ]")
 
 step_two = parser.add_argument_group(
         'Step two option\'s files (02-bowtie-samtools)')
@@ -149,8 +149,29 @@ gen_opts.add_argument('-d', '--debug', action='store_true',
 gen_opts.add_argument('-t', '--threads', 
         dest='threads', metavar='INT', 
         type=int, default=1,
-        help="number of alignment threads to launch.\n"
+        help="Number of alignment threads to launch.\n"
         " [ Default = 1 ] ")
+
+gen_opts.add_argument('-P', '--procs',
+        dest='procs', metavar='INT',
+        type=int, default=1,
+        help="Number of parallel processes to launch\n"
+        "with gnu-parallel (this multiplies with threaded programs).\n"
+        " [ Default = 1 ] ")
+
+gen_opts.add_argument('--skip-centrifuge',
+        dest='skip_cent', 
+        action='store_true',
+        help="Skip step one, centrifuge.\n"
+        "NOTE: this means that you already have genomes\n"
+        "ready to align your RNA reads to.\n")
+
+gen_opts.add_argument('--skip-rna-align',
+        dest='skip_rna',
+        action='store_true',
+        help="Skip steps one and two.\n"
+        "This means you already have genomes / gffs AND\n"
+        "sam files that are sorted by name for htseq_count.\n")
 
 args = parser.parse_args()
 
@@ -227,23 +248,87 @@ def parse_metadata(metadata_file):
 
     return metadata_df
 
-def run_centrifuge(reads, options):
+def parse_reads(panda_df, panda_column):
+    """Simple function that takes a panda column
+    and spits out a string that centrifuge and bowtie2 like"""
+    read_full_paths = []
+    read_string = ''
 
-    options_string = parse_options_text(options)
+    for read in list(panda_df[panda_column]):
+        if type(read) == float: #if the field is empty, pandas returns a float
+            continue
+        else:
+            read_full_paths.append(os.path.join(args.in_dir,read))
+    
+    if len(read_full_paths) > 0: #return an empty string if nothing in the column
+        read_string = ','.join(read_full_paths)
 
-    centrifuge = os.getenv('CENTIMG')
+    return read_string
 
-    command = 'sudo singularity exec {} run_centrifuge.py \
-            -q {} -o {} {}'.format(centrifuge, args.in_dir,
-            args.out_dir, options_string)
+def run_centrifuge(reads, cent_opts, patric_opts):
 
-    returncode = execute(command)
+    options_string = parse_options_text(cent_opts) + parse_options_text(patric_opts)
 
-    if returncode == 0:
-        print('{} ran sucessfully, continuing...'.format(centrifuge))
+    #If we are using this from the metadata txt
+    #we will have either paired + unpaired
+    #or just paired
+    #or just unpaired
+    #the -q won't be used
+    f_reads = ''
+    r_reads = ''
+    u_reads = ''
+
+    f_reads = parse_reads(metadata, 'dna_forward')
+    r_reads = parse_reads(metadata, 'dna_reverse')
+    u_reads = parse_reads(metadata, 'dna_unpaired')
+
+    if args.debug:
+        print("These are the reads: forward {}\n".format(f_reads))
+        print("reverse {}\n".format(r_reads))
+        print("and unpaired {}\n".format(u_reads))
+
+    bin_dir = os.path.dirname(os.path.realpath(__file__))
+    cent_script = os.path.join(bin_dir, 'run_centrifuge.py')
+
+    if f_reads and r_reads and not u_reads:
+
+        command = '{} -1 {} -2 {} -o {} {}'.format(cent_script, f_reads,
+                    r_reads, args.out_dir, options_string)
+
+        returncode = execute(command)
+
+        if returncode == 0:
+            print('{} ran sucessfully, continuing...'.format(cent_script))
+        else:
+            error('{} failed, exiting'.format(cent_script))
+
+    elif f_reads and r_reads and u_reads:
+        
+        command = '{} -1 {} -2 {} -U -o {} {}'.format(cent_script, f_reads,
+                    r_reads, u_reads, args.out_dir, options_string)
+
+        returncode = execute(command)
+
+        if returncode == 0:
+            print('{} ran sucessfully, continuing...'.format(cent_script))
+        else:
+            error('{} failed, exiting'.format(cent_script))
+
+    elif u_reads and not f_reads or r_reads:
+
+        command = '{} -U {} -o {} {}'.format(cent_script, u_reads,
+                    args.out_dir, options_string)
+
+        returncode = execute(command)
+
+        if returncode == 0:
+            print('{} ran sucessfully, continuing...'.format(cent_script))
+        else:
+            error('{} failed, exiting'.format(cent_script))
+
     else:
-        error('{} failed, exiting'.format(centrifuge))
-
+        error('No Reads!')
+    
 def run_rna_align(reads, options):
     Status = ''
 
@@ -277,9 +362,20 @@ if __name__ == '__main__':
     metadata = parse_metadata(args.metadata)
 
     #DEBUG: parse all options
-    if args.debug:
-        for key in filter(lambda key: key.endswith('opts'), vars(args)):
-            parse_options_text(vars(args)[key])
+#    if args.debug:
+#        for key in filter(lambda key: key.endswith('opts'), vars(args)):
+#            parse_options_text(vars(args)[key])
     
     #Run centrifuge
-    run_centrifuge(None, args.cent_opts)
+    if not args.skip_cent:
+        print("Running centrifuge")
+        run_centrifuge(metadata, args.cent_opts, args.patric_opts)
+
+    #Run bowtie2
+    if not args.skip_rna:
+        print("Running bowtie2 alignment for RNA reads")
+        run_rna_align(metadata, args.bowtie2_opts)
+    
+    #Run htseq-count and deseq2
+    run_htseq(metadata, args.htseq_count_opts, args.deseq2_opts)
+
