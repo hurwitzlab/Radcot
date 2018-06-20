@@ -15,4 +15,14 @@ test_paired:
 		-o $(WORK)/radcot-test \
 		-x 9606,32630 -t 4 -P 4
 
-
+test_runall:
+	singularity exec $(IMG) runAll.py \
+		-i $(WORK)/in-smaller \
+		-o $(WORK)/radcot-test \
+		-m $(WORK)/subset_crc_mouse_metadata.txt \
+		-C $(WORK)/centrifuge-opts.txt \
+		-p $(WORK)/patric-opts.txt \
+		-B $(WORK)/bowtie2-opts.txt \
+		-H $(WORK)/htseq-opts.txt \
+		-D $(WORK)/deseq2-opts.txt \
+		-d -t 4 -P 4

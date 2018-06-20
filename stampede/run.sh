@@ -2,10 +2,12 @@
 
 #SBATCH -J radcot
 #SBATCH -A iPlant-Collabs 
-#SBATCH -N 12
-#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -n 68
 #SBATCH -t 24:00:00
 #SBATCH -p normal
+#SBATCH --mail-type BEGIN,END,FAIL
+#SBATCH --mail-user scottdaniel@email.arizona.edu
 
 # Author: Scott G. Daniel <scottdaniel@email.arizona.edu>
 
@@ -22,51 +24,20 @@ else
 fi
 #echo "#### Current modules after run.sh processing:"
 #module list 2>&1
-#
-# Set up defaults for inputs, constants
-#
 
 #check for unset (i.e. [blank]) variables
 set -u
 
-#If this repo is properly checked out, this will work#
-#Otherwise, you probably forgot to: #
-#git pull && git submodule update --init --recursive#
-
-#export PRJROOT=".."
-#export STEPONE="$PRJROOT/01-centrifuge-patric"
-#export STEPTWO="$PRJROOT/02-bowtie-samtools"
-#export STEPTHREE="$PRJROOT/03-count-deseq"
-#
-#if [[ ! -d $STEPONE || ! -d $STEPTWO || ! -d $STEPTHREE ]]; then
-#    echo "Can not find the required submodules"
-#    echo "You need to \"git pull && git submodule update --init --recursive\""
-#    exit 1
-#fi
-
-#simplified by putting all images in one dir
-#but you still have to build them from the submodule's "singularity/" dirs
 export MAINIMG="radcot.img"
-export CENTIMG="centrifuge-patric.img"
-export BOWTIMG="bowtie-sam.img"
-export HTSQIMG="count-deseq.img"
 
-if [[ ! -e $MAINIMG || ! -e $CENTIMG || ! -e $BOWTIMG || ! -e $HTSQIMG ]]; then
-    echo "Need the singularity images to work!"
+if [[ ! -e $MAINIMG ]]; then
+    echo "Need the singularity image to work!"
     echo "Go into the /singularity dirs and \"make img\"!"
     exit 1
 fi
 
-OUT_DIR="$PWD/radcot-out"
-#
-# Some needed functions
-#
-function lc() { 
-    wc -l "$1" | cut -d ' ' -f 1 
-}
-
 function HELP() {
-    singularity run radcot.img -h
+    singularity run $MAINIMG -h
     exit 0
 }
 
@@ -76,7 +47,7 @@ function HELP() {
 [[ $# -eq 0 ]] && echo "Need some arguments" && HELP
 
 #else run the MASTER script
-singularity run radcot.img $@
+singularity run $MAINIMG $@
 
 echo "Done, look in OUT_DIR \"$OUT_DIR\""
 echo "Comments to Scott Daniel <scottdaniel@email.arizona.edu>"
