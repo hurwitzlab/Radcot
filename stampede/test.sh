@@ -11,7 +11,10 @@
 
 #for local testing#####
 #if the singularity.conf is right, then /vagrant should be auto-shared
-export WORK="/vagrant"
+if [[ -z $MODULEPATH ]]; then
+    export WORK="/vagrant"
+fi
+
 export INPUT_DIR="$WORK/in"
 ########################
 
@@ -26,4 +29,4 @@ export OUT_DIR="$WORK/radcot_test"
 bash run.sh -o $OUT_DIR \
     -i $INPUT_DIR \
     -m $WORK/subset_crc_mouse_metadata.txt \
-    --debug --threads 4
+    --debug --threads 68
