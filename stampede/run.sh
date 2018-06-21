@@ -17,8 +17,8 @@
 if [[ $MODULEPATH ]]; then
     echo "#### LOADING TACC-SINGULARITY ####"
     module load tacc-singularity 2>&1
-    echo "#### LOADING LAUNCHER ####"
-    module load launcher 2>&1
+#    echo "#### LOADING LAUNCHER ####"
+#    module load launcher 2>&1
 else
     echo "No modulepath"
 fi
