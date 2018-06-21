@@ -240,6 +240,29 @@ def execute(command):
 
     return process.returncode
 
+# --------------------------------------------------
+def line_count(fname):
+    """Count the number of lines in a file"""
+    n = 0
+    for _ in open(fname):
+        n += 1
+
+    return n
+
+# --------------------------------------------------
+def run_job_file(jobfile, msg='Running job', procs=1):
+    """Run a job file if there are jobs"""
+    num_jobs = line_count(jobfile)
+    warn('{} (# jobs = {})'.format(msg, num_jobs))
+
+    if num_jobs > 0:
+        print('parallel -P {} < '.format(procs) + jobfile)
+        subprocess.run('parallel -P {} < '.format(procs) + jobfile, shell=True)
+
+    os.remove(jobfile)
+
+    return True
+
 #############################
 # Script-specific Functions #
 #############################
@@ -247,7 +270,8 @@ def execute(command):
 def parse_metadata(metadata_file):
 
     if os.path.isfile(metadata_file):
-        metadata_df = pd.read_table(metadata_file,delimiter='\t',header=0,comment='#')
+        df = pd.read_table(metadata_file,delimiter='\t',header=0,comment='#')
+        metadata_df = df.replace(pd.np.nan,'',regex=True) #make NaN empty strings to they eval as false in python
     else:
         error("Metadata file {} can not be found".format(metadata_file))
     
@@ -338,76 +362,90 @@ def run_centrifuge(reads, cent_opts, patric_opts):
     else:
         error('No Reads!')
 
-def run_rna_align(genome_dir, metadata, options):
+def run_rna_align(genome_dir, metadata, options, procs):
 
     options_string = parse_options_text(options)
     
-    f_reads = ''
-    r_reads = ''
-    u_reads = ''
-
-    f_reads = parse_reads(metadata, 'rna_forward')
-    r_reads = parse_reads(metadata, 'rna_reverse')
-    u_reads = parse_reads(metadata, 'rna_unpaired')
-
-    if args.debug:
-        print("These are the reads: forward {}\n".format(f_reads))
-        print("reverse {}\n".format(r_reads))
-        print("and unpaired {}\n".format(u_reads))
-
+    jobfile = tmp.NamedTemporaryFile(delete=False, mode='wt')
     bin_dir = os.path.dirname(os.path.realpath(__file__))
     bowt_script = os.path.join(bin_dir, 'patric_bowtie2.py')
 
-    if f_reads and r_reads and not u_reads:
+    tmpl = '{0} -g {1} -1 {2} -2 {3} -U {4} -O {5} -n {6} {7}'
+    
+    for condition in df['condition'].unique():
+        for row in conditioned.get_group(condition).iterrows():
+            jobfile.write(tmpl.format(bowt_script, #0
+                genome_dir, #1
+                row[1]['rna_forward'], #2
+                row[1]['rna_reverse'], #3
+                row[1]['rna_unpaired'], #4
+                args.out_dir, #5
+                row[1]['bam_files'], #6
+                options_string)) #7
 
-        command = '{} -g {} -1 {} -2 {} -O {} {}'.format(bowt_script,
-                genome_dir, 
-                f_reads,
-                r_reads, 
-                args.out_dir, 
-                options_string)
+    if args.debug:
+        print("These are the commands I'm running:\n")
+        execute('cat {}'.format(jobfile.name))
+    
+    jobfile.close()
 
-        returncode = execute(command)
+    if not run_job_file(jobfile=jobfile.name, msg='Running RNA alignments', procs=procs):
+        die()
 
-        if returncode == 0:
-            print('{} ran sucessfully, continuing...'.format(bowt_script))
-        else:
-            error('{} failed, exiting'.format(bowt_script))
-
-    elif f_reads and r_reads and u_reads:
-        
-        command = '{} -g {} -1 {} -2 {} -U {} -O {} {}'.format(bowt_script, 
-                genome_dir,
-                f_reads,
-                r_reads, 
-                u_reads, 
-                args.out_dir, 
-                options_string)
-
-        returncode = execute(command)
-
-        if returncode == 0:
-            print('{} ran sucessfully, continuing...'.format(bowt_script))
-        else:
-            error('{} failed, exiting'.format(bowt_script))
-
-    elif u_reads and not f_reads or r_reads:
-
-        command = '{} -g {} -U {} -O {} {}'.format(bowt_script, 
-                genome_dir,
-                u_reads,
-                args.out_dir, 
-                options_string)
-
-        returncode = execute(command)
-
-        if returncode == 0:
-            print('{} ran sucessfully, continuing...'.format(bowt_script))
-        else:
-            error('{} failed, exiting'.format(bowt_script))
-
-    else:
-        error('No Reads!')
+#
+#    bin_dir = os.path.dirname(os.path.realpath(__file__))
+#    bowt_script = os.path.join(bin_dir, 'patric_bowtie2.py')
+#
+#    if f_reads and r_reads and not u_reads:
+#
+#        command = '{} -g {} -1 {} -2 {} -O {} {}'.format(bowt_script,
+#                genome_dir, 
+#                f_reads,
+#                r_reads, 
+#                args.out_dir, 
+#                options_string)
+#
+#        returncode = execute(command)
+#
+#        if returncode == 0:
+#            print('{} ran sucessfully, continuing...'.format(bowt_script))
+#        else:
+#            error('{} failed, exiting'.format(bowt_script))
+#
+#    elif f_reads and r_reads and u_reads:
+#        
+#        command = '{} -g {} -1 {} -2 {} -U {} -O {} {}'.format(bowt_script, 
+#                genome_dir,
+#                f_reads,
+#                r_reads, 
+#                u_reads, 
+#                args.out_dir, 
+#                options_string)
+#
+#        returncode = execute(command)
+#
+#        if returncode == 0:
+#            print('{} ran sucessfully, continuing...'.format(bowt_script))
+#        else:
+#            error('{} failed, exiting'.format(bowt_script))
+#
+#    elif u_reads and not f_reads or r_reads:
+#
+#        command = '{} -g {} -U {} -O {} {}'.format(bowt_script, 
+#                genome_dir,
+#                u_reads,
+#                args.out_dir, 
+#                options_string)
+#
+#        returncode = execute(command)
+#
+#        if returncode == 0:
+#            print('{} ran sucessfully, continuing...'.format(bowt_script))
+#        else:
+#            error('{} failed, exiting'.format(bowt_script))
+#
+#    else:
+#        error('No Reads!')
 
 def run_htseq(alignments, options):
     Status = ''
@@ -447,7 +485,7 @@ if __name__ == '__main__':
     #Run bowtie2
     if not args.skip_rna:
         print("Running bowtie2 alignment for RNA reads")
-        run_rna_align(args.genome_dir, metadata, args.bowtie2_opts)
+        run_rna_align(args.genome_dir, metadata, args.bowtie2_opts, args.procs)
     
     #Run htseq-count and deseq2
     run_htseq(metadata, args.htseq_count_opts, args.deseq2_opts)

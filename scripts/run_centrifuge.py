@@ -11,6 +11,11 @@ import sys
 import tempfile as tmp
 from pprint import pprint
 
+#WORK env var will be present on TACC
+#But may not be set when testing locally
+if os.getenv('WORK') is None:
+    os.environ['WORK'] = './'
+
 # --------------------------------------------------
 def get_args():
     """get args"""
