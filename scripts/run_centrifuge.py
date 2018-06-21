@@ -69,6 +69,15 @@ def get_args():
                         type=str,
                         default=os.path.join(os.getcwd(), 'centrifuge-out'))
 
+    parser.add_argument('-g', '--genome-dir',
+                        dest='out_dir', metavar='DIRECTORY',
+                        default=os.path.join(os.getenv('WORK'),'genomes'),
+                        help="Directory with all the genomes (*.fna's).\n"
+                        "This is important because it must be the same in\n"
+                        "all steps. Thus, if you keep the default here, you must\n"
+                        "keep the default in all steps\n"
+                        " [ Default = $WORK/genomes ]")
+
     parser.add_argument('-x', '--exclude_taxids',
                         help='Exclude tax ids',
                         metavar='str',
@@ -94,15 +103,15 @@ def get_args():
                         default=1)
     
     parser.add_argument("-m", "--min_abundance", action="store", \
-            help="Minimum abundance needed to download a species\' genome", \
-            default='.01', type=float)
+                        help="Minimum abundance needed to download a species\' genome", \
+                        default='.01', type=float)
 
     parser.add_argument("-a", "--annotation_type", \
-            default="refseq", choices=['refseq','patric'], \
-            help="Which type of annotation to get: refseq or patric. " \
-            "NOTE: Choosing \"refseq\" will discard genomes that only have PATRIC annotaion. " \
-            "NOTE2: patric annotations will generally include refseq genes. " \
-            "Default is \"refseq\" as it is generally better curated.")
+                        default="refseq", choices=['refseq','patric'], \
+                        help="Which type of annotation to get: refseq or patric. " \
+                        "NOTE: Choosing \"refseq\" will discard genomes that only have PATRIC annotaion. " \
+                        "NOTE2: patric annotations will generally include refseq genes. " \
+                        "Default is \"refseq\" as it is generally better curated.")
 
     return parser.parse_args()
 
@@ -264,8 +273,6 @@ def run_cent_paired(file_format, paired_reads, exclude_ids,
 def get_genomes(reports_dir, out_dir, min_abundance, annotation_type, procs):
     """Get genomes from PATRIC"""
 
-    genome_dir = os.path.join(out_dir, 'genomes')
-
     if not os.path.isdir(genome_dir):
         os.makedirs(genome_dir)
     
@@ -276,7 +283,7 @@ def get_genomes(reports_dir, out_dir, min_abundance, annotation_type, procs):
     for report in glob.iglob(reports_dir + '/*.tsv'):
         jobfile.write(tmpl.format(bin_dir,
                                   report,
-                                  genome_dir,
+                                  out_dir,
                                   min_abundance,
                                   annotation_type))
 
@@ -524,8 +531,9 @@ def main():
     #getting genomes using cfuge_to_genome.py 
     min_abundance = args.min_abundance
     annotation_type = args.annotation_type
+    genome_dir = args.genome_dir
     get_genomes(reports_dir=reports_dir,
-                            out_dir=out_dir,
+                            out_dir=genome_dir,
                             min_abundance=min_abundance,
                             annotation_type=annotation_type,
                             procs=args.procs)

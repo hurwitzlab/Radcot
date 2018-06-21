@@ -64,7 +64,9 @@ inputs.add_argument('-G', '--gff-dir',
         help="The Directory containing individual gffs\n"
         "that will be pasted together.\n"
         "if pasted gff file already exists, this input\n"
-        "will be ignored, [ Default = $WORK/gffs ]")
+        "will be ignored, THIS must match the genome_dir\n"
+        "of the preceding steps\n"
+        " [ Default = $WORK/genomes ]")
 
 inputs.add_argument('-g', '--gff-file', 
         dest='gff_file', metavar='FILENAME', 

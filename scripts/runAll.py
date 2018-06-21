@@ -82,10 +82,13 @@ inputs.add_argument('-o', '--out-dir',
         "results in. [ Default = Current working dir ]")
 
 inputs.add_argument('-g', '--genome-dir',
-        dest='out_dir', metavar='DIRECTORY',
-        default=os.path.join(os.getcwd(),'genomes'),
+        dest='genome_dir', metavar='DIRECTORY',
+        default=os.path.join(os.getenv('WORK'),'genomes'),
         help="Directory with all the genomes (*.fna's).\n"
-        " [ Default = $PWD/genomes ]")
+        "This is important because it must be the same in\n"
+        "all steps. Thus, if you keep the default here, you must\n"
+        "keep the default in all steps\n"
+        " [ Default = $WORK/genomes ]")
 
 inputs.add_argument('-m', '--metadata', 
         dest='metadata', metavar='FILENAME',
@@ -274,10 +277,6 @@ def parse_reads(panda_df, panda_column):
 def run_centrifuge(reads, cent_opts, patric_opts):
 
     options_string = parse_options_text(cent_opts) + parse_options_text(patric_opts)
-    #TODO: expose the output directory from the patric_opts
-    #so that it can be passed to the next step
-    #TODO: ok, i tried to do this at the bottom of this function
-    #and the bottom of the script but check it tomorrow with a fresh mind
 
     #If we are using this from the metadata txt
     #we will have either paired + unpaired
@@ -339,14 +338,6 @@ def run_centrifuge(reads, cent_opts, patric_opts):
     else:
         error('No Reads!')
 
-    #Extracting genome_dir if it was set in patric_opts (it's the out_dir there)
-    with open(patric_opts) as options_txt:
-        for line in options_txt:
-            if line.startswith('-o'):
-                genome_dir = line.replace('-o ','')
-
-    return genome_dir
-    
 def run_rna_align(genome_dir, metadata, options):
 
     options_string = parse_options_text(bowtie2_opts)
@@ -417,8 +408,6 @@ def run_rna_align(genome_dir, metadata, options):
 
     else:
         error('No Reads!')
-    
-
 
 def run_htseq(alignments, options):
     Status = ''
@@ -453,15 +442,12 @@ if __name__ == '__main__':
     #Run centrifuge
     if not args.skip_cent:
         print("Running centrifuge")
-        genome_dir = run_centrifuge(metadata, args.cent_opts, args.patric_opts)
+        run_centrifuge(metadata, args.cent_opts, args.patric_opts)
 
     #Run bowtie2
     if not args.skip_rna:
         print("Running bowtie2 alignment for RNA reads")
-        if genome_dir: #if the output/genome dir was set by patric_opts
-            run_rna_align(genome_dir, metadata, args.bowtie2_opts)
-        else:
-            run_rna_align(args.genome_dir, metadata, args.bowtie2_opts)
+        run_rna_align(args.genome_dir, metadata, args.bowtie2_opts)
     
     #Run htseq-count and deseq2
     run_htseq(metadata, args.htseq_count_opts, args.deseq2_opts)
