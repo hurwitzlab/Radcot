@@ -229,7 +229,8 @@ def execute(command, logfile):
                                shell=True)
     (stdout, stderr) = process.communicate()
 
-    logfile.write(stderr + os.linesep)
+    logfile.write(stderr.decode() + os.linesep)
+    logfile.write(stdout.decode() + os.linesep)
 
 def prepare_bowtie_db(genome_dir, bt2_idx, logfile):
 
@@ -319,7 +320,7 @@ if __name__ == '__main__':
 
     #make the log file
     args.log_fn = os.path.join(args.out_dir,args.log_fn)
-    log = open(args.log_fn, 'w', 0)  # Set buffer size to 0 to force flushing to disk
+    log = open(args.log_fn, 'w')  
 
     #DEBUG#
 #    log.write('ALL THE ARGUMENTS:' + os.linesep)
