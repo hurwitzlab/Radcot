@@ -3,8 +3,8 @@
 #SBATCH -A iPlant-Collabs
 #SBATCH -N 1
 #SBATCH -n 68
-#SBATCH -t 02:00:00
-#SBATCH -p development
+#SBATCH -t 12:00:00
+#SBATCH -p normal
 #SBATCH -J radcot
 #SBATCH --mail-type BEGIN,END,FAIL
 #SBATCH --mail-user scottdaniel@email.arizona.edu
@@ -19,6 +19,7 @@ export INPUT_DIR="$WORK/in-smaller"
 ########################
 
 export OUT_DIR="$WORK/radcot_test"
+export GENOME_DIR="$WORK/genomes"
 
 #export MY_PARAMRUN="$HOME/launcher/paramrun"
 
@@ -28,8 +29,10 @@ export OUT_DIR="$WORK/radcot_test"
 
 bash run.sh -o $OUT_DIR \
     -i $INPUT_DIR \
+    -g $GENOME_DIR \
     -m $WORK/subset_crc_mouse_metadata.txt \
-    --debug --threads 4 -P 4
+    --debug \
+    --skip-centrifuge
 
 #from makefile in ../scripts:
 #test_runall:
