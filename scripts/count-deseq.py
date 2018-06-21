@@ -111,6 +111,12 @@ gen_opts.add_argument('-t', '--threads',
         help="number of alignment threads to launch.\n"
         " [ Default = 1 ] ")
 
+gen_opts.add_argument('-P', '--procs',
+                        help='Max number of processes to run',
+                        metavar='int',
+                        type=int,
+                        default=1)
+
 program_opts = parser.add_argument_group('Specific program options')
 
 program_opts.add_argument('-v', '--varInt',
@@ -145,6 +151,41 @@ args = parser.parse_args()
 #######################
 # GENERAL FUNCTIONS ###
 #######################
+# --------------------------------------------------
+def warn(msg):
+    """Print a message to STDERR"""
+    print(msg, file=sys.stderr)
+
+# --------------------------------------------------
+def die(msg='Something went wrong'):
+    """Print a message to STDERR and exit with error"""
+    warn('Error: {}'.format(msg))
+    sys.exit(1)
+
+# --------------------------------------------------
+def line_count(fname):
+    """Count the number of lines in a file"""
+    n = 0
+    for _ in open(fname):
+        n += 1
+
+    return n
+
+# --------------------------------------------------
+def run_job_file(jobfile, msg='Running job', procs=1):
+    """Run a job file if there are jobs"""
+    num_jobs = line_count(jobfile)
+    warn('{} (# jobs = {})'.format(msg, num_jobs))
+
+    if num_jobs > 0:
+        print('parallel -P {} < '.format(procs) + jobfile)
+        subprocess.run('parallel -P {} < '.format(procs) + jobfile, shell=True)
+
+    os.remove(jobfile)
+
+    return True
+
+
 
 #really basic checker, check that options file exists and then check that each line begins with a '-', then parse
 def parse_options_text(options_txt_path):
@@ -205,6 +246,20 @@ def filter_gff(gff_in,gff_out):
 
     return gff_out
 
+def parse_metadata(metadata_file):
+
+    if os.path.isfile(metadata_file):
+        df = pd.read_table(metadata_file,delimiter='\t',header=0,comment='#')
+        metadata_df = df.replace(pd.np.nan,'',regex=True) #make NaN empty strings to they eval as false in python
+    else:
+        error("Metadata file {} can not be found".format(metadata_file))
+    
+    if args.debug:
+        print("These are the column headings for {}:\n".format(metadata_file))
+        print(list(metadata_df))
+
+    return metadata_df
+
 def read_targets(metadata):
 
     bams_and_counts = []
@@ -223,15 +278,27 @@ def htseq_count(gff, bams_and_counts):
     
     htseq_count_options = parse_options_text(args.htseq_count_opt_txt)
 
-    processCall = ''
+    jobfile = tmp.NamedTemporaryFile(delete=False, mode='wt')
+    tmpl = 'samtools view -@ {} -h {} | htseq-count {} - {} > {}\n'
 
     for bam_file, count_file in bams_and_counts:
-        
         bam_path = os.path.join(args.bams_dir, bam_file)
         count_path = os.path.join(args.out_dir, count_file)
-        processCall = 'samtools view -@ {} -h {} | htseq-count {} - {} > {}'.format(args.threads, bam_path, htseq_count_options, gff, count_path)
-
-        execute(processCall)
+        if not os.path.isfile(count_path):
+            jobfile.write(tmpl.format(args.threads, 
+                bam_path, 
+                htseq_count_options, 
+                gff, 
+                count_path))
+    
+    jobfile.close()
+ 
+    if args.debug:
+        print("These are the commands I'm running:\n")
+        execute('cat {}'.format(jobfile.name))
+        
+    if not run_job_file(jobfile=jobfile.name, msg='Running htseq count', procs=procs):
+        die()
 
 def run_deseq():
 
@@ -239,14 +306,10 @@ def run_deseq():
 
     processCall = ''
 
-    #call deseq2.r 
-    #SARTools deseq wrapper
-    #https://github.com/PF2-pasteur-fr/SARTools/blob/master/template_script_DESeq2_CL.r
-
-#local testing
-#    processCall = './deseq2.r --targetFile {} --rawDir {}\
-#            --varInt {} --condRef {} {}'.format(args.metadata, args.out_dir,
-#                    args.varInt, args.condRef, deseq2_options)
+    #TODO: need some way to parse the metadata
+    #to sum up the counts by replicate and condition
+    #could use the metadata splitting functionality from run_rna_align in runAll.py
+    #and the write_tsv from run_centrifuge.py
 
     processCall = 'deseq2.r {} --targetFile {} --rawDir {}\
             --varInt {} --condRef {}'.format(deseq2_options,
