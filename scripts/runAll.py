@@ -376,7 +376,7 @@ def run_rna_align(genome_dir, metadata, options):
 
     elif f_reads and r_reads and u_reads:
         
-        command = '{} -g {} -1 {} -2 {} -U -O {} {}'.format(bowt_script, 
+        command = '{} -g {} -1 {} -2 {} -U {} -O {} {}'.format(bowt_script, 
                 genome_dir,
                 f_reads,
                 r_reads, 
