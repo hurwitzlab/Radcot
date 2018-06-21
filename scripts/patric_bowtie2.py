@@ -90,7 +90,7 @@ inputs.add_argument('-2', '--m2',
 
 inputs.add_argument('-U', '--unpaired', 
         dest='reads_unpaired', metavar='STRING',
-        default='',
+        default='',nargs='?',
         help="Files with unpaired reads.\n"
         "Could be gzip'ed (extension: .gz) or bzip2'ed (extension: .bz2).")
 

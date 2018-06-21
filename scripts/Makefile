@@ -36,6 +36,6 @@ test_bowtie:
 		-i $(INPUT_DIR) \
 		-g $(GENOME_DIR) \
 		-m $(WORK)/subset_crc_mouse_metadata.txt \
-		--debug \
+		--debug --procs 4 \
 		--skip-centrifuge
 

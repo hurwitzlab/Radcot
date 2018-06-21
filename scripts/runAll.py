@@ -46,6 +46,7 @@ and feeds them to each of the steps
 
 import os, sys, argparse, glob, subprocess
 import pandas as pd
+import tempfile as tmp
 from pprint import pprint
 
 #WORK env var will be present on TACC
@@ -239,6 +240,17 @@ def execute(command):
     print(stderr.decode() + os.linesep)
 
     return process.returncode
+# --------------------------------------------------
+def warn(msg):
+    """Print a message to STDERR"""
+    print(msg, file=sys.stderr)
+
+# --------------------------------------------------
+def die(msg='Something went wrong'):
+    """Print a message to STDERR and exit with error"""
+    warn('Error: {}'.format(msg))
+    sys.exit(1)
+
 
 # --------------------------------------------------
 def line_count(fname):
@@ -370,25 +382,31 @@ def run_rna_align(genome_dir, metadata, options, procs):
     bin_dir = os.path.dirname(os.path.realpath(__file__))
     bowt_script = os.path.join(bin_dir, 'patric_bowtie2.py')
 
-    tmpl = '{0} -g {1} -1 {2} -2 {3} -U {4} -O {5} -n {6} {7}'
-    
-    for condition in df['condition'].unique():
+    tmpl = '{0} -g {1} -1 {2} -2 {3} -U {4} -O {5} -n {6} {7}\n'
+   
+    conditioned = metadata.groupby('condition')
+
+    if args.debug:
+        print("These are the groupings by condition:")
+        print(conditioned)
+
+    for condition in metadata['condition'].unique():
         for row in conditioned.get_group(condition).iterrows():
             jobfile.write(tmpl.format(bowt_script, #0
                 genome_dir, #1
-                row[1]['rna_forward'], #2
-                row[1]['rna_reverse'], #3
-                row[1]['rna_unpaired'], #4
+                os.path.join(args.in_dir,row[1]['rna_forward']), #2
+                os.path.join(args.in_dir,row[1]['rna_reverse']), #3
+                os.path.join(args.in_dir,row[1]['rna_unpaired']), #4
                 args.out_dir, #5
-                row[1]['bam_files'], #6
+                os.path.join(args.in_dir,row[1]['bam_files']), #6
                 options_string)) #7
 
+    jobfile.close()
+    
     if args.debug:
         print("These are the commands I'm running:\n")
         execute('cat {}'.format(jobfile.name))
-    
-    jobfile.close()
-
+  
     if not run_job_file(jobfile=jobfile.name, msg='Running RNA alignments', procs=procs):
         die()
 
