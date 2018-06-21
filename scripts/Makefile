@@ -1,4 +1,7 @@
 IMG="radcot.img"
+INPUT_DIR=$(WORK)/in-smaller
+OUT_DIR=$(WORK)/radcot_test
+GENOME_DIR=$(WORK)/genomes
 
 test:
 	singularity exec $(IMG) run_centrifuge.py \
@@ -26,3 +29,13 @@ test_runall:
 		-H $(WORK)/htseq-opts.txt \
 		-D $(WORK)/deseq2-opts.txt \
 		-d -t 4 -P 4
+
+test_bowtie:
+	./runAll.py \
+		-o $(OUT_DIR) \
+		-i $(INPUT_DIR) \
+		-g $(GENOME_DIR) \
+		-m $(WORK)/subset_crc_mouse_metadata.txt \
+		--debug \
+		--skip-centrifuge
+

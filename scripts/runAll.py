@@ -340,7 +340,7 @@ def run_centrifuge(reads, cent_opts, patric_opts):
 
 def run_rna_align(genome_dir, metadata, options):
 
-    options_string = parse_options_text(bowtie2_opts)
+    options_string = parse_options_text(options)
     
     f_reads = ''
     r_reads = ''
