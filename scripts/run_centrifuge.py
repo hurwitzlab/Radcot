@@ -275,7 +275,7 @@ def run_cent_paired(file_format, paired_reads, exclude_ids,
     return list(filter(os.path.isfile,
                        glob.iglob(reports_dir + '/**', recursive=True)))
 
-def get_genomes(reports_dir, out_dir, min_abundance, annotation_type, procs):
+def get_genomes(reports_dir, genome_dir, min_abundance, annotation_type, procs):
     """Get genomes from PATRIC"""
 
     if not os.path.isdir(genome_dir):
@@ -288,7 +288,7 @@ def get_genomes(reports_dir, out_dir, min_abundance, annotation_type, procs):
     for report in glob.iglob(reports_dir + '/*.tsv'):
         jobfile.write(tmpl.format(bin_dir,
                                   report,
-                                  out_dir,
+                                  genome_dir,
                                   min_abundance,
                                   annotation_type))
 
@@ -538,7 +538,7 @@ def main():
     annotation_type = args.annotation_type
     genome_dir = args.genome_dir
     get_genomes(reports_dir=reports_dir,
-                            out_dir=genome_dir,
+                            genome_dir=genome_dir,
                             min_abundance=min_abundance,
                             annotation_type=annotation_type,
                             procs=args.procs)
