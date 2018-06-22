@@ -299,7 +299,7 @@ def to_bam(cmd2run):
         
         sort_bam = 'samtools sort --threads {} -n {} > {}'.format(args.threads, bam_out + '.tmp', bam_out)
 
-        execute(sort_bam, logfile)
+        execute(sort_bam)
         
         if os.path.isfile(bam_out):
             os.remove(bam_out + '.tmp')
@@ -316,22 +316,22 @@ if __name__ == '__main__':
 
      #DEBUG#
     print('ALL THE ARGUMENTS:' + os.linesep)
-    pprint(args, log)
+    pprint(args)
 #
     print('Directory contents for genomes:' + os.linesep)
-    pprint(os.listdir(args.genome_dir),log)
+    pprint(os.listdir(args.genome_dir))
     #END DEBUG#
     
     if os.path.isfile(args.bt2_idx + '.1.bt2') or os.path.isfile(args.bt2_idx + '.1.bt2l'):
         print('Bowtie2 index, {}, already exists... assuming its ok'.format(args.bt2_idx) + os.linesep)
         bt2_db_base = args.bt2_idx
     else:
-        bt2_db_base = prepare_bowtie_db(args.genome_dir, args.bt2_idx, log)
+        bt2_db_base = prepare_bowtie_db(args.genome_dir, args.bt2_idx)
 
     print('Bowtie2 base db: {}'.format(bt2_db_base) + os.linesep)
 
     cmd_and_bam = bowtie(bt2_db_base)
 
-    to_bam(cmd_and_bam, log)
+    to_bam(cmd_and_bam)
 
     print('Program Complete, Hopefully it Worked!')
