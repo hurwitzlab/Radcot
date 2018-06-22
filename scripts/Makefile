@@ -28,10 +28,10 @@ test_runall:
 
 test_bowtie:
 	./runAll.py \
-		-o $(OUT_DIR) \
 		-i $(INPUT_DIR) \
+		-o $(OUT_DIR) \
 		-g $(GENOME_DIR) \
 		-m $(WORK)/subset_crc_mouse_metadata.txt \
-		--debug --procs 4 \
+		-d -t 12 -P 4 \
 		--skip-centrifuge
 

@@ -48,6 +48,7 @@ import os, sys, argparse, glob, subprocess
 import pandas as pd
 import tempfile as tmp
 from pprint import pprint
+from Bio import SeqIO
 
 #WORK env var will be present on TACC
 #But may not be set when testing locally
