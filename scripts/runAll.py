@@ -300,7 +300,7 @@ def parse_reads(panda_df, panda_column):
     read_string = ''
 
     for read in list(panda_df[panda_column]):
-        if type(read) == float: #if the field is empty, pandas returns a float
+        if read == '': #since the blank fields are empty strings we skip them
             continue
         else:
             read_full_paths.append(os.path.join(args.in_dir,read))
@@ -319,10 +319,6 @@ def run_centrifuge(reads, cent_opts, patric_opts):
     #or just paired
     #or just unpaired
     #the -q won't be used
-    f_reads = ''
-    r_reads = ''
-    u_reads = ''
-
     f_reads = parse_reads(metadata, 'dna_forward')
     r_reads = parse_reads(metadata, 'dna_reverse')
     u_reads = parse_reads(metadata, 'dna_unpaired')
@@ -349,7 +345,7 @@ def run_centrifuge(reads, cent_opts, patric_opts):
 
     elif f_reads and r_reads and u_reads:
         
-        command = '{} -1 {} -2 {} -U -o {} {}'.format(cent_script, f_reads,
+        command = '{} -1 {} -2 {} -U {} -o {} {}'.format(cent_script, f_reads,
                     r_reads, u_reads, args.out_dir, options_string)
 
         returncode = execute(command)

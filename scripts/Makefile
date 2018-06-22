@@ -1,4 +1,4 @@
-IMG="radcot.img"
+IMG="../singularity/radcot.img"
 INPUT_DIR=$(WORK)/in-smaller
 OUT_DIR=$(WORK)/radcot_test
 GENOME_DIR=$(WORK)/genomes
