@@ -228,25 +228,6 @@ def execute(command):
     print(stderr.decode() + os.linesep)
     print(stdout.decode() + os.linesep)
 
-def prepare_bowtie_db(genome_dir, bt2_idx):
-
-    bt2_db_fasta = args.bt2_idx + '.fna'
-    db_dir = os.path.dirname(args.bt2_idx) #E.g. /vagrant/bt2_idx
-    # Ensure there's a genome.fna file or make one if not
-    if not os.path.isfile(bt2_db_fasta): #E.g. /vagrant/bt2_idx/genome.fna
-        pprint("No input bowtie2 db specified," \
-               + " concatenating fastas in {}".format(args.genome_dir))
-        #make the directory for the bt2 index if not there
-        if not os.path.isdir(db_dir): 
-            os.makedirs(db_dir) #E.g. mkdir /vagrant/bt2_idx
-        bt2_db_fasta = cat_fasta(args.genome_dir,args.bt2_idx)
-        pprint("Created a combined genome for you: {}".format(bt2_db_fasta))
-
-    bowtie_db_cmd = 'bowtie2-build --threads {} -f {} {}'.format(args.threads, bt2_db_fasta, args.bt2_idx)
-    execute(bowtie_db_cmd)
-
-    return args.bt2_idx
-
 
 def bowtie(bowtie2_db):
     
@@ -318,17 +299,15 @@ if __name__ == '__main__':
     print('ALL THE ARGUMENTS:' + os.linesep)
     pprint(args)
 #
-    print('Directory contents for genomes:' + os.linesep)
-    pprint(os.listdir(args.genome_dir))
+#    print('Directory contents for genomes:' + os.linesep)
+#    pprint(os.listdir(args.genome_dir))
     #END DEBUG#
     
     if os.path.isfile(args.bt2_idx + '.1.bt2') or os.path.isfile(args.bt2_idx + '.1.bt2l'):
-        print('Bowtie2 index, {}, already exists... assuming its ok'.format(args.bt2_idx) + os.linesep)
+        print('Bowtie2 index found: {}'.format(args.bt2_idx) + os.linesep)
         bt2_db_base = args.bt2_idx
     else:
-        bt2_db_base = prepare_bowtie_db(args.genome_dir, args.bt2_idx)
-
-    print('Bowtie2 base db: {}'.format(bt2_db_base) + os.linesep)
+        error('No bowtie2 index, cannot continue!')
 
     cmd_and_bam = bowtie(bt2_db_base)
 

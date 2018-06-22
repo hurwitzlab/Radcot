@@ -91,6 +91,13 @@ inputs.add_argument('-g', '--genome-dir',
         "keep the default in all steps\n"
         " [ Default = $WORK/genomes ]")
 
+inputs.add_argument('-x', '--bt2-idx', 
+        dest='bt2_idx', metavar='FILENAME', 
+        default=os.path.join(os.getenv('WORK'),'bt2_index/','genome'),
+        help="Index filename prefix (minus trailing .X.bt2).\n"
+        "This will also be the name of the fasta file, E.g. [bt2-idx].fna\n"
+        "NOTE: Bowtie 1 and Bowtie 2 indexes are not compatible.")
+
 inputs.add_argument('-m', '--metadata', 
         dest='metadata', metavar='FILENAME',
         default=os.path.join(os.getenv('WORK'),'metadata.txt'),
@@ -370,6 +377,25 @@ def run_centrifuge(reads, cent_opts, patric_opts):
     else:
         error('No Reads!')
 
+def prepare_bowtie_db(genome_dir, bt2_idx):
+
+    bt2_db_fasta = args.bt2_idx + '.fna'
+    db_dir = os.path.dirname(args.bt2_idx) #E.g. /vagrant/bt2_idx
+    # Ensure there's a genome.fna file or make one if not
+    if not os.path.isfile(bt2_db_fasta): #E.g. /vagrant/bt2_idx/genome.fna
+        pprint("No input bowtie2 db specified," \
+               + " concatenating fastas in {}".format(args.genome_dir))
+        #make the directory for the bt2 index if not there
+        if not os.path.isdir(db_dir): 
+            os.makedirs(db_dir) #E.g. mkdir /vagrant/bt2_idx
+        bt2_db_fasta = cat_fasta(args.genome_dir,args.bt2_idx)
+        pprint("Created a combined genome for you: {}".format(bt2_db_fasta))
+
+    bowtie_db_cmd = 'bowtie2-build --threads {} -f {} {}'.format(args.threads, bt2_db_fasta, args.bt2_idx)
+    execute(bowtie_db_cmd)
+
+    return args.bt2_idx
+
 def run_rna_align(genome_dir, metadata, options, procs):
 
     options_string = parse_options_text(options)
@@ -384,15 +410,24 @@ def run_rna_align(genome_dir, metadata, options, procs):
 
     if args.debug:
         print("These are the groupings by condition:")
-        print(conditioned)
+        pprint(conditioned)
 
     for condition in metadata['condition'].unique():
         for row in conditioned.get_group(condition).iterrows():
+
+            #have to do this because sometimes the reads will not be there
+            if row[1]['rna_forward']:
+                f_read = os.path.join(args.in_dir,row[1]['rna_forward'])
+            if row[1]['rna_reverse']:
+                r_read = os.path.join(args.in_dir,row[1]['rna_reverse'])
+            if row[1]['rna_unpaired']: 
+                u_read = os.path.join(args.in_dir,row[1]['rna_unpaired'])
+
             jobfile.write(tmpl.format(bowt_script, #0
                 genome_dir, #1
-                os.path.join(args.in_dir,row[1]['rna_forward']), #2
-                os.path.join(args.in_dir,row[1]['rna_reverse']), #3
-                os.path.join(args.in_dir,row[1]['rna_unpaired']), #4
+                f_read, #2
+                r_read, #3
+                u_read, #4
                 args.out_dir, #5
                 os.path.join(args.in_dir,row[1]['bam_files']), #6
                 options_string)) #7
@@ -406,62 +441,7 @@ def run_rna_align(genome_dir, metadata, options, procs):
     if not run_job_file(jobfile=jobfile.name, msg='Running RNA alignments', procs=procs):
         die()
 
-#
-#    bin_dir = os.path.dirname(os.path.realpath(__file__))
-#    bowt_script = os.path.join(bin_dir, 'patric_bowtie2.py')
-#
-#    if f_reads and r_reads and not u_reads:
-#
-#        command = '{} -g {} -1 {} -2 {} -O {} {}'.format(bowt_script,
-#                genome_dir, 
-#                f_reads,
-#                r_reads, 
-#                args.out_dir, 
-#                options_string)
-#
-#        returncode = execute(command)
-#
-#        if returncode == 0:
-#            print('{} ran sucessfully, continuing...'.format(bowt_script))
-#        else:
-#            error('{} failed, exiting'.format(bowt_script))
-#
-#    elif f_reads and r_reads and u_reads:
-#        
-#        command = '{} -g {} -1 {} -2 {} -U {} -O {} {}'.format(bowt_script, 
-#                genome_dir,
-#                f_reads,
-#                r_reads, 
-#                u_reads, 
-#                args.out_dir, 
-#                options_string)
-#
-#        returncode = execute(command)
-#
-#        if returncode == 0:
-#            print('{} ran sucessfully, continuing...'.format(bowt_script))
-#        else:
-#            error('{} failed, exiting'.format(bowt_script))
-#
-#    elif u_reads and not f_reads or r_reads:
-#
-#        command = '{} -g {} -U {} -O {} {}'.format(bowt_script, 
-#                genome_dir,
-#                u_reads,
-#                args.out_dir, 
-#                options_string)
-#
-#        returncode = execute(command)
-#
-#        if returncode == 0:
-#            print('{} ran sucessfully, continuing...'.format(bowt_script))
-#        else:
-#            error('{} failed, exiting'.format(bowt_script))
-#
-#    else:
-#        error('No Reads!')
-
-def run_htseq(alignments, options):
+def run_htseq(alignments, htseq_count_opts, deseq2_opts):
     Status = ''
 
     # do stuff
@@ -499,6 +479,15 @@ if __name__ == '__main__':
     #Run bowtie2
     if not args.skip_rna:
         print("Running bowtie2 alignment for RNA reads")
+
+        if os.path.isfile(args.bt2_idx + '.1.bt2') or os.path.isfile(args.bt2_idx + '.1.bt2l'):
+            print('Bowtie2 index, {}, already exists... assuming its ok'.format(args.bt2_idx) + os.linesep)
+            bt2_db_base = args.bt2_idx
+        else:
+            bt2_db_base = prepare_bowtie_db(args.genome_dir, args.bt2_idx)
+
+        print('Bowtie2 base db: {}'.format(bt2_db_base) + os.linesep)
+
         run_rna_align(args.genome_dir, metadata, args.bowtie2_opts, args.procs)
     
     #Run htseq-count and deseq2
