@@ -75,7 +75,7 @@ def get_args():
                         default=os.path.join(os.getcwd(), 'centrifuge-out'))
 
     parser.add_argument('-g', '--genome-dir',
-                        dest='out_dir', metavar='DIRECTORY',
+                        dest='genome_dir', metavar='DIRECTORY',
                         default=os.path.join(os.getenv('WORK'),'genomes'),
                         help="Directory with all the genomes (*.fna's).\n"
                         "This is important because it must be the same in\n"
