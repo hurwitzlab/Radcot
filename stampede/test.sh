@@ -31,8 +31,8 @@ bash run.sh -o $OUT_DIR \
     -i $INPUT_DIR \
     -g $GENOME_DIR \
     -m $WORK/subset_crc_mouse_metadata.txt \
-    --debug \
-    --skip-centrifuge
+    --debug --threads 12 \
+    --procs 4
 
 #from makefile in ../scripts:
 #test_runall:
