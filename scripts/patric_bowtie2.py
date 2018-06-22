@@ -114,10 +114,6 @@ gen_opts.add_argument('-n', '--bam-name',
         help="Filename to use for output bam. \n"
         "This is usually defined by the calling script \n"
         "based on the input read names")
-
-gen_opts.add_argument('-l', '--log-file', dest='log_fn', 
-        metavar='FILENAME', default='bowtie2-read-mapping.log',
-        help="Log file name")
 ###
 bowtie2_opts = parser.add_argument_group('Bowtie2 Alignment Options')
 
@@ -222,32 +218,32 @@ def cat_fasta(genome_dir,bt2_idx):
         return w_file.name
 
 
-def execute(command, logfile):
+def execute(command):
 
-    logfile.write('Executing {}'.format(command) + os.linesep)
+    print('Executing {}'.format(command) + os.linesep)
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                shell=True)
     (stdout, stderr) = process.communicate()
 
-    logfile.write(stderr.decode() + os.linesep)
-    logfile.write(stdout.decode() + os.linesep)
+    print(stderr.decode() + os.linesep)
+    print(stdout.decode() + os.linesep)
 
-def prepare_bowtie_db(genome_dir, bt2_idx, logfile):
+def prepare_bowtie_db(genome_dir, bt2_idx):
 
     bt2_db_fasta = args.bt2_idx + '.fna'
     db_dir = os.path.dirname(args.bt2_idx) #E.g. /vagrant/bt2_idx
     # Ensure there's a genome.fna file or make one if not
     if not os.path.isfile(bt2_db_fasta): #E.g. /vagrant/bt2_idx/genome.fna
         pprint("No input bowtie2 db specified," \
-               + " concatenating fastas in {}".format(args.genome_dir),logfile)
+               + " concatenating fastas in {}".format(args.genome_dir))
         #make the directory for the bt2 index if not there
         if not os.path.isdir(db_dir): 
             os.makedirs(db_dir) #E.g. mkdir /vagrant/bt2_idx
         bt2_db_fasta = cat_fasta(args.genome_dir,args.bt2_idx)
-        pprint("Created a combined genome for you: {}".format(bt2_db_fasta),logfile)
+        pprint("Created a combined genome for you: {}".format(bt2_db_fasta))
 
     bowtie_db_cmd = 'bowtie2-build --threads {} -f {} {}'.format(args.threads, bt2_db_fasta, args.bt2_idx)
-    execute(bowtie_db_cmd, logfile)
+    execute(bowtie_db_cmd)
 
     return args.bt2_idx
 
@@ -285,21 +281,21 @@ def bowtie(bowtie2_db):
 
     return [(bowtie2_cmd, bam_out)]
 
-def to_bam(cmd2run, logfile):
+def to_bam(cmd2run):
 
     processCall = ''
 
     for (bowtie2, bam_out) in cmd2run:
         
         #DEBUG#
-        log.write('Running bowtie2 and converting to bam' + os.linesep)
+        print('Running bowtie2 and converting to bam' + os.linesep)
 
         convert_to_bam = '{} | samtools view --threads {} -bT {} - > {}'.format( bowtie2, args.threads, args.bt2_idx + '.fna', bam_out + '.tmp')
 
-        execute(convert_to_bam, logfile)
+        execute(convert_to_bam)
 
         #Debug#
-        log.write('Sorting bam by position' + os.linesep)
+        print('Sorting bam by position' + os.linesep)
         
         sort_bam = 'samtools sort --threads {} -n {} > {}'.format(args.threads, bam_out + '.tmp', bam_out)
 
@@ -318,29 +314,24 @@ if __name__ == '__main__':
     if not os.path.isdir(args.out_dir):
         os.makedirs(args.out_dir)
 
-    #make the log file
-    args.log_fn = os.path.join(args.out_dir,args.log_fn)
-    log = open(args.log_fn, 'w')  
-
-    #DEBUG#
-#    log.write('ALL THE ARGUMENTS:' + os.linesep)
-#    pprint(args, log)
+     #DEBUG#
+    print('ALL THE ARGUMENTS:' + os.linesep)
+    pprint(args, log)
 #
-#    log.write('Directory contents for genomes:' + os.linesep)
-#    pprint(os.listdir(args.genome_dir),log)
+    print('Directory contents for genomes:' + os.linesep)
+    pprint(os.listdir(args.genome_dir),log)
     #END DEBUG#
     
     if os.path.isfile(args.bt2_idx + '.1.bt2') or os.path.isfile(args.bt2_idx + '.1.bt2l'):
-        log.write('Bowtie2 index, {}, already exists... assuming its ok'.format(args.bt2_idx) + os.linesep)
+        print('Bowtie2 index, {}, already exists... assuming its ok'.format(args.bt2_idx) + os.linesep)
         bt2_db_base = args.bt2_idx
     else:
         bt2_db_base = prepare_bowtie_db(args.genome_dir, args.bt2_idx, log)
 
-    log.write('Bowtie2 base db: {}'.format(bt2_db_base) + os.linesep)
+    print('Bowtie2 base db: {}'.format(bt2_db_base) + os.linesep)
 
     cmd_and_bam = bowtie(bt2_db_base)
 
     to_bam(cmd_and_bam, log)
 
-    log.write('Program Complete, Hopefully it Worked!')
-    log.close()
+    print('Program Complete, Hopefully it Worked!')
