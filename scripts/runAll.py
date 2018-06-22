@@ -212,6 +212,16 @@ def module_load(module_name):
         os.environ[key] = value.rstrip('\n')
     proc.communicate()
 
+def cat_fasta(genome_dir,bt2_idx):
+    file_list = glob.glob(genome_dir + "/*.fna")
+    with open(bt2_idx+'.fna','w') as w_file:
+        for filen in file_list:
+            with open(filen, 'rU') as o_file:
+                seq_records = SeqIO.parse(o_file, 'fasta')
+                SeqIO.write(seq_records, w_file, 'fasta')
+
+        return w_file.name
+
 #basic checker, check that options file exists and then check that each line begins with a '-', then parse
 def parse_options_text(options_txt_path):
     if not (os.path.isfile(options_txt_path)):

@@ -206,18 +206,6 @@ def error(msg):
     sys.stderr.write("ERROR: {}\n".format(msg))
     sys.stderr.flush()
     sys.exit(1)
-
-def cat_fasta(genome_dir,bt2_idx):
-    file_list = glob.glob(genome_dir + "/*.fna")
-    with open(bt2_idx+'.fna','w') as w_file:
-        for filen in file_list:
-            with open(filen, 'rU') as o_file:
-                seq_records = SeqIO.parse(o_file, 'fasta')
-                SeqIO.write(seq_records, w_file, 'fasta')
-
-        return w_file.name
-
-
 def execute(command):
 
     print('Executing {}'.format(command) + os.linesep)
