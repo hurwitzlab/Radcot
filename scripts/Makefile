@@ -1,4 +1,4 @@
-IMG="../singularity/radcot.img"
+IMG="../stampede/radcot.img"
 INPUT_DIR=$(WORK)/in-smaller
 OUT_DIR=$(WORK)/radcot_test
 GENOME_DIR=$(WORK)/genomes
@@ -19,16 +19,12 @@ test_paired:
 		-x 9606,32630 -t 4 -P 4
 
 test_runall:
-	singularity exec $(IMG) runAll.py \
-		-i $(WORK)/in-smaller \
-		-o $(WORK)/radcot-test \
+	./runAll.py \
+		-i $(INPUT_DIR) \
+		-o $(OUT_DIR) \
+		-g $(GENOME_DIR) \
 		-m $(WORK)/subset_crc_mouse_metadata.txt \
-		-C $(WORK)/centrifuge-opts.txt \
-		-p $(WORK)/patric-opts.txt \
-		-B $(WORK)/bowtie2-opts.txt \
-		-H $(WORK)/htseq-opts.txt \
-		-D $(WORK)/deseq2-opts.txt \
-		-d -t 4 -P 4
+		-d -t 12 -P 4
 
 test_bowtie:
 	./runAll.py \
