@@ -460,17 +460,17 @@ def run_htseq(genome_dir, metadata, htseq_count_opts, deseq2_opts):
     bin_dir = os.path.dirname(os.path.realpath(__file__))
     count_script = os.path.join(bin_dir, 'count-deseq.py')
 
-    tmpl = '{1} --gff-dir {2} --bams-dir {3} --metadata {4} --out-dir {5} \
-            --threads {6} --htseq-count-options {7} --deseq2-options {8}'
+    tmpl = '{0} --gff-dir {1} --bams-dir {2} --metadata {3} --out-dir {4} \
+            --threads {5} --htseq-count-options {6} --deseq2-options {7}'
     
-    cmd = tmpl.format(count_script, #1
-            genome_dir, #2
-            args.in_dir, #3
-            metadata, #4
-            args.out_dir, #5
-            args.threads, #6
-            count_opt_string, #7
-            deseq2_opt_string) #8
+    cmd = tmpl.format(count_script, #0
+            genome_dir, #1
+            args.in_dir, #2
+            metadata, #3
+            args.out_dir, #4
+            args.threads, #5
+            count_opt_string, #6
+            deseq2_opt_string) #7
 
     execute(cmd)
 
