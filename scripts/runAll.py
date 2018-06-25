@@ -453,17 +453,20 @@ def run_rna_align(genome_dir, metadata, options, procs):
     if not run_job_file(jobfile=jobfile.name, msg='Running RNA alignments', procs=procs):
         die()
 
-def run_htseq(genome_dir, metadata_file, htseq_count_opts, deseq2_opts):
+def run_htseq(genome_dir, metadata_file, htseq_count_opts, deseq2_opts, procs):
 
-    count_opt_string = parse_options_text(htseq_count_opts)
-    deseq2_opt_string = parse_options_text(deseq2_opts)
+    if args.debug:
+        parse_options_text(htseq_count_opts)
+        parse_options_text(deseq2_opts)
     
     bin_dir = os.path.dirname(os.path.realpath(__file__))
     count_script = os.path.join(bin_dir, 'count-deseq.py')
 
     tmpl = '{0} --gff-dir {1} --bams-dir {2} --metadata {3} --out-dir {4} \
-            --threads {5} --htseq-count-options {6} --deseq2-options {7}'
-    
+            --threads {5} --htseq-count-options {6} --deseq2-options {7} \
+            --procs {8}'
+   
+    metadata = parse_metadata(metadata_file)
     reps = metadata.groupby(['condition','replicate'])
 
     if args.debug:
@@ -488,11 +491,12 @@ def run_htseq(genome_dir, metadata_file, htseq_count_opts, deseq2_opts):
     cmd = tmpl.format(count_script, #0
             genome_dir, #1
             args.in_dir, #2
-            metadata, #3
+            metadata_file, #3
             args.out_dir, #4
             args.threads, #5
-            count_opt_string, #6
-            deseq2_opt_string) #7
+            htseq_count_opts, #6
+            deseq2_opts, #7
+            procs) #8
     execute(cmd)
 
     return None
@@ -540,5 +544,5 @@ if __name__ == '__main__':
         run_rna_align(args.genome_dir, metadata, args.bowtie2_opts, args.procs)
     
     #Run htseq-count and deseq2
-    run_htseq(args.genome_dir, args.metadata, args.htseq_count_opts, args.deseq2_opts)
+    run_htseq(args.genome_dir, args.metadata, args.htseq_count_opts, args.deseq2_opts, args.procs)
 

@@ -41,6 +41,7 @@ import subprocess
 import argparse
 from pprint import pprint
 import pandas as pd
+import tempfile as tmp
 
 #WORK env var will be present on TACC
 #But may not be set when testing locally
@@ -274,7 +275,7 @@ def read_targets(metadata):
 
     return bams_and_counts
 
-def htseq_count(gff, bams_and_counts):
+def htseq_count(gff, bams_and_counts, procs):
     
     htseq_count_options = parse_options_text(args.htseq_count_opt_txt)
 
@@ -369,7 +370,7 @@ if __name__ == '__main__':
         filter_gff(args.gff_file,gff_out)
         print("Filtered {} into {} for you\n".format(os.path.basename(args.gff_file),os.path.basename(gff_out)))
 
-        htseq_count(gff_out, read_targets(args.metadata))
+        htseq_count(gff_out, read_targets(args.metadata), args.procs)
 
         run_deseq()
 
