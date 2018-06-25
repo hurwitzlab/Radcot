@@ -18,6 +18,8 @@ sed -i 's/^accn|//' "$DIR/$BASE.temp2"
 #file "$DIR/$BASE.temp2"
 (>&2 echo "only get CDS")
 grep -P "\tCDS\t" "$DIR/$BASE.temp2"
+(>&2 echo "clean up badly formed attributes")
+sed 's/\;.*$//' "$DIR/$BASE.temp2"
 #echo "get the rRNA for cuffdiff (or other progs) that support filtering by rRNA seq"
 #grep -P "\trRNA\t" "$DIR/$BASE.temp2" > "$DIR/$BASE-rRNA.gff" 
 

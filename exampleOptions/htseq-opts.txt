@@ -1,3 +1,6 @@
+#alignment quality filter
 -a 0
+#only analyze protein coding sequences
 -t CDS
+#only get the ID / locus_tag
 -i ID
