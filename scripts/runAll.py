@@ -421,7 +421,8 @@ def run_rna_align(genome_dir, metadata, options, procs):
 
     if args.debug:
         print("These are the groupings by condition:")
-        pprint(conditioned)
+        for condition in metadata['condition'].unique():
+            print(conditioned.get_group(condition))
 
     for condition in metadata['condition'].unique():
         for row in conditioned.get_group(condition).iterrows():
@@ -452,7 +453,7 @@ def run_rna_align(genome_dir, metadata, options, procs):
     if not run_job_file(jobfile=jobfile.name, msg='Running RNA alignments', procs=procs):
         die()
 
-def run_htseq(genome_dir, metadata, htseq_count_opts, deseq2_opts):
+def run_htseq(genome_dir, metadata_file, htseq_count_opts, deseq2_opts):
 
     count_opt_string = parse_options_text(htseq_count_opts)
     deseq2_opt_string = parse_options_text(deseq2_opts)
@@ -463,6 +464,27 @@ def run_htseq(genome_dir, metadata, htseq_count_opts, deseq2_opts):
     tmpl = '{1} --gff-dir {2} --bams-dir {3} --metadata {4} --out-dir {5} \
             --threads {6} --htseq-count-options {7} --deseq2-options {8}'
     
+    reps = metadata.groupby(['condition','replicate'])
+
+    if args.debug:
+        print("These are the replicates by condition:")
+        for c in metadata['condition'].unique():
+            for r in metadata['replicate'].unique():
+                print(reps.get_group((c,r))) 
+#
+#    for c in metadata['condition'].unique():
+#        for r in metadata['replicate'].unique():
+#            for row in reps.get_group((c,r)).iterrows():
+#
+#            #have to do this because sometimes the reads will not be there
+#            if row[1]['rna_forward']:
+#                f_read = os.path.join(args.in_dir,row[1]['rna_forward'])
+#            if row[1]['rna_reverse']:
+#                r_read = os.path.join(args.in_dir,row[1]['rna_reverse'])
+#            if row[1]['rna_unpaired']: 
+#                u_read = os.path.join(args.in_dir,row[1]['rna_unpaired'])
+#
+
     cmd = tmpl.format(count_script, #1
             genome_dir, #2
             args.in_dir, #3
@@ -519,5 +541,5 @@ if __name__ == '__main__':
         run_rna_align(args.genome_dir, metadata, args.bowtie2_opts, args.procs)
     
     #Run htseq-count and deseq2
-    run_htseq(args.genome_dir, metadata, args.htseq_count_opts, args.deseq2_opts)
+    run_htseq(args.genome_dir, args.metadata, args.htseq_count_opts, args.deseq2_opts)
 
