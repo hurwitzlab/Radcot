@@ -474,19 +474,6 @@ def run_htseq(genome_dir, metadata_file, htseq_count_opts, deseq2_opts, procs):
         for c in metadata['condition'].unique():
             for r in metadata['replicate'].unique():
                 print(reps.get_group((c,r))) 
-#
-#    for c in metadata['condition'].unique():
-#        for r in metadata['replicate'].unique():
-#            for row in reps.get_group((c,r)).iterrows():
-#
-#            #have to do this because sometimes the reads will not be there
-#            if row[1]['rna_forward']:
-#                f_read = os.path.join(args.in_dir,row[1]['rna_forward'])
-#            if row[1]['rna_reverse']:
-#                r_read = os.path.join(args.in_dir,row[1]['rna_reverse'])
-#            if row[1]['rna_unpaired']: 
-#                u_read = os.path.join(args.in_dir,row[1]['rna_unpaired'])
-#
 
     cmd = tmpl.format(count_script, #0
             genome_dir, #1
