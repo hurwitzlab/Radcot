@@ -367,8 +367,12 @@ if __name__ == '__main__':
         gff_old_name, ext = os.path.splitext(args.gff_file)
         gff_new_name = gff_old_name + '-CDS'
         gff_out = gff_new_name + ext
-        filter_gff(args.gff_file,gff_out)
-        print("Filtered {} into {} for you\n".format(os.path.basename(args.gff_file),os.path.basename(gff_out)))
+
+        if not os.path.isfile(gff_out):
+            print("Filtering {} into {} for you\n".format(os.path.basename(args.gff_file),os.path.basename(gff_out)))
+            filter_gff(args.gff_file,gff_out)
+        else:
+            print("Using the previously filtered {}\n".format(gff_new_name))
 
         htseq_count(gff_out, read_targets(args.metadata), args.procs)
 

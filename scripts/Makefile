@@ -44,3 +44,11 @@ test_count:
 		-d -t 12 -P 4 \
 		--skip-centrifuge \
 		--skip-rna-align
+
+just_count:
+	./count-deseq.py \
+		--gff-dir $(GENOME_DIR) \
+		--bams-dir $(INPUT_DIR) \
+		--metadata $(WORK)/subset_crc_mouse_metadata.txt \
+		--out-dir $(OUT_DIR) \
+		-d -t 12 -P 4
