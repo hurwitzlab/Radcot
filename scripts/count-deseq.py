@@ -133,19 +133,21 @@ program_opts.add_argument('-c', '--condRef',
 
 program_opts.add_argument('-C', '--htseq-count-options', 
         dest='htseq_count_opt_txt', metavar='FILENAME',
-        default=os.path.join(os.getenv('WORK'),'htseq_options.txt'),
-        help="File with additional options for htseq-count\n"
+        default=os.path.join(os.getenv('WORK'),'htseq-opts.txt'),
+        help="File with additional opts for htseq-count\n"
         "Options must be one per line like so:\n"
         "-o1 option1\n"
-        "-o2 option2")
+        "-o2 option2\n"
+        "[ Default = $WORK/htseq-opts.txt ]")
 
 program_opts.add_argument('-D', '--deseq2-options', 
         dest='deseq2_opt_txt', metavar='FILENAME',
-        default=os.path.join(os.getenv('WORK'),'deseq2_options.txt'),
-        help="File with additional options for deseq2\n"
+        default=os.path.join(os.getenv('WORK'),'deseq2-opts.txt'),
+        help="File with additional opts for deseq2\n"
         "Options must be one per line like so:\n"
         "-o1 option1\n"
-        "-o2 option2")
+        "-o2 option2\n"
+        "[ Default = $WORK/deseq2-opts.txt ]")
 
 args = parser.parse_args()
 
