@@ -283,27 +283,31 @@ def htseq_count(gff, metadata, procs):
 
     jobfile = tmp.NamedTemporaryFile(delete=False, mode='wt')
     
-    metadata = parse_metadata(metadata_file)
+    metadata = parse_metadata(metadata)
     reps = metadata.groupby(['condition','replicate'])
 
+#htseq-count [options] alignment_file gff_file
     for c in metadata['condition'].unique():
         for r in metadata['replicate'].unique():
             if len(reps.get_group((c,r))) > 1:
                 bam_string = ''
-                for bam in get_group((c,r))['bam_files']:
+                for bam in reps.get_group((c,r))['bam_files']:
                     bam_string += os.path.join(args.bams_dir,
                             bam)
                     bam_string += ' '
                 count_path = os.path.join(args.out_dir,
-                        reps.get_group((c,r))['count_files'][0])
-                tmpl = 'htseq-count {0} {1} > {2}\n'
+                        reps.get_group((c,r))['count_files'].unique()[0])
+                tmpl = 'htseq-count -f bam {0} {1} {2} > {3}\n'
                 if not os.path.isfile(count_path): #dont overwrite
-                    jobfile.write(tmpl.format(gff, bam_string, count_path))
+                    jobfile.write(tmpl.format(htseq_count_options, 
+                    bam_string, 
+                    gff, 
+                    count_path))
             else:
                 bam_path = os.path.join(args.bams_dir, 
-                        get_group((c,r))['bam_files'][0])
+                        reps.get_group((c,r))['bam_files'].unique()[0])
                 count_path = os.path.join(args.out_dir,
-                        reps.get_group((c,r))['count_files'][0])
+                        reps.get_group((c,r))['count_files'].unique()[0])
                 tmpl = 'samtools view -@ {} -h {} | htseq-count {} - {} > {}\n'
                 if not os.path.isfile(count_path):
                     jobfile.write(tmpl.format(args.threads, 
