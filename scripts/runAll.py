@@ -452,12 +452,29 @@ def run_rna_align(genome_dir, metadata, options, procs):
     if not run_job_file(jobfile=jobfile.name, msg='Running RNA alignments', procs=procs):
         die()
 
-def run_htseq(alignments, htseq_count_opts, deseq2_opts):
-    Status = ''
+def run_htseq(genome_dir, metadata, htseq_count_opts, deseq2_opts):
 
-    # do stuff
+    count_opt_string = parse_options_text(htseq_count_opts)
+    deseq2_opt_string = parse_options_text(deseq2_opts)
+    
+    bin_dir = os.path.dirname(os.path.realpath(__file__))
+    count_script = os.path.join(bin_dir, 'count-deseq.py')
 
-    return Status
+    tmpl = '{1} --gff-dir {2} --bams-dir {3} --metadata {4} --out-dir {5} \
+            --threads {6} --htseq-count-options {7} --deseq2-options {8}'
+    
+    cmd = tmpl.format(count_script, #1
+            genome_dir, #2
+            args.in_dir, #3
+            metadata, #4
+            args.out_dir, #5
+            args.threads, #6
+            count_opt_string, #7
+            deseq2_opt_string) #8
+
+    execute(cmd)
+
+    return None
 
 ##################
 # THE MAIN LOOP ##
@@ -502,5 +519,5 @@ if __name__ == '__main__':
         run_rna_align(args.genome_dir, metadata, args.bowtie2_opts, args.procs)
     
     #Run htseq-count and deseq2
-    run_htseq(metadata, args.htseq_count_opts, args.deseq2_opts)
+    run_htseq(args.genome_dir, metadata, args.htseq_count_opts, args.deseq2_opts)
 

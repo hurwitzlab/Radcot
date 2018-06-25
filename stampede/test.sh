@@ -3,8 +3,8 @@
 #SBATCH -A iPlant-Collabs
 #SBATCH -N 1
 #SBATCH -n 68
-#SBATCH -t 02:00:00
-#SBATCH -p development
+#SBATCH -t 06:00:00
+#SBATCH -p normal
 #SBATCH -J radcot
 #SBATCH --mail-type BEGIN,END,FAIL
 #SBATCH --mail-user scottdaniel@email.arizona.edu

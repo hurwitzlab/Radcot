@@ -34,4 +34,13 @@ test_bowtie:
 		-m $(WORK)/subset_crc_mouse_metadata.txt \
 		-d -t 12 -P 4 \
 		--skip-centrifuge
-
+	
+test_count:
+	./runAll.py \
+		-i $(INPUT_DIR) \
+		-o $(OUT_DIR) \
+		-g $(GENOME_DIR) \
+		-m $(WORK)/subset_crc_mouse_metadata.txt \
+		-d -t 12 -P 4 \
+		--skip-centrifuge \
+		--skip-rna-align
