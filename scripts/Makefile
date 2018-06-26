@@ -23,7 +23,7 @@ test_runall:
 		-i $(INPUT_DIR) \
 		-o $(OUT_DIR) \
 		-g $(GENOME_DIR) \
-		-m $(WORK)/subset_crc_mouse_metadata.txt \
+		-m $(WORK)/subset_crc_mouse_metadata_simreps.txt \
 		-d -t 12 -P 4
 
 test_bowtie:
@@ -49,6 +49,6 @@ just_count:
 	./count-deseq.py \
 		--gff-dir $(GENOME_DIR) \
 		--bams-dir $(INPUT_DIR) \
-		--metadata $(WORK)/subset_crc_mouse_metadata.txt \
+		--metadata $(WORK)/subset_crc_mouse_metadata_simreps.txt \
 		--out-dir $(OUT_DIR) \
 		-d -t 12 -P 4
