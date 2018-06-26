@@ -167,7 +167,7 @@ problem <- checkParameters.DESeq2(projectName=projectName,author=author,targetFi
 warnings()
 # loading target file
 tempTable = read.delim(targetFile,comment.char = "#")
-sanitized_table = tempTable[,c('label','count_files','condition')]
+sanitized_table = unique(tempTable[,c('label','count_files','condition')])
 write.table(sanitized_table,file = paste(workDir,"/sanitized.txt",sep=""),sep = "\t",row.names = F,col.names = T)
 targetFile = paste(workDir,"/sanitized.txt",sep="")
 target <- loadTargetFile(targetFile=targetFile, varInt=varInt, condRef=condRef, batch=batch)

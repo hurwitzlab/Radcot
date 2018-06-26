@@ -158,11 +158,13 @@ args = parser.parse_args()
 def warn(msg):
     """Print a message to STDERR"""
     print(msg, file=sys.stderr)
+    sys.stderr.flush
 
 # --------------------------------------------------
 def die(msg='Something went wrong'):
     """Print a message to STDERR and exit with error"""
     warn('Error: {}'.format(msg))
+    sys.stderr.flush
     sys.exit(1)
 
 # --------------------------------------------------
@@ -210,12 +212,6 @@ def parse_options_text(options_txt_path):
 
     return options_string
 
-def error(msg):
-    sys.stderr.write("ERROR: {}\n".format(msg))
-    sys.stderr.flush()
-    sys.exit(1)
-
-
 def execute(command):
 
     print('Executing {}'.format(command) + os.linesep)
@@ -255,7 +251,7 @@ def parse_metadata(metadata_file):
         df = pd.read_table(metadata_file,delimiter='\t',header=0,comment='#')
         metadata_df = df.replace(pd.np.nan,'',regex=True) #make NaN empty strings to they eval as false in python
     else:
-        error("Metadata file {} can not be found".format(metadata_file))
+        die("Metadata file {} can not be found".format(metadata_file))
     
     if args.debug:
         print("These are the column headings for {}:\n".format(metadata_file))
@@ -331,15 +327,12 @@ def run_deseq():
 
     processCall = ''
 
-    #TODO: need some way to parse the metadata
-    #to sum up the counts by replicate and condition
-    #could use the metadata splitting functionality from run_rna_align in runAll.py
-    #and the write_tsv from run_centrifuge.py
-
-    processCall = 'deseq2.r {} --targetFile {} --rawDir {}\
-            --varInt {} --condRef {}'.format(deseq2_options,
-                    args.metadata, args.out_dir,
-                    args.varInt, args.condRef)
+    processCall = './deseq2.r --targetFile {} --rawDir {}\
+            --varInt {} --condRef {} {}'.format(args.metadata, 
+                    args.out_dir,
+                    args.varInt, 
+                    args.condRef, 
+                    deseq2_options)
 
     execute(processCall)
 

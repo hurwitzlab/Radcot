@@ -114,3 +114,4 @@ venv.bak/
 *.swp
 #mac dir info
 .DS_Store
+sanitized.txt
