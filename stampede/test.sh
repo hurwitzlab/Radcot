@@ -30,10 +30,11 @@ export GENOME_DIR="$WORK/genomes"
 bash run.sh -o $OUT_DIR \
     -i $INPUT_DIR \
     -g $GENOME_DIR \
-    -m $WORK/subset_crc_mouse_metadata.txt \
+    -m $WORK/subset_crc_mouse_metadata_simreps.txt \
     --debug --threads 12 \
     --procs 4 \
-    --skip-centrifuge
+    --skip-centrifuge \
+    --skip-rna-align
 
 #from makefile in ../scripts:
 #test_runall:
