@@ -327,7 +327,7 @@ def run_deseq():
 
     processCall = ''
 
-    processCall = './deseq2.r --targetFile {} --rawDir {}\
+    processCall = 'deseq2.r --targetFile {} --rawDir {}\
             --varInt {} --condRef {} {}'.format(args.metadata, 
                     args.out_dir,
                     args.varInt, 
