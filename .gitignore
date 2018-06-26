@@ -115,3 +115,4 @@ venv.bak/
 #mac dir info
 .DS_Store
 sanitized.txt
+figures
