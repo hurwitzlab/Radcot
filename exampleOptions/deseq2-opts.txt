@@ -1,4 +1,5 @@
 --fitType "parametric"
 --typeTrans "VST"
---projectName "CRC_mouse"
---author "Scott G Daniel"
+--projectName "awesome project"
+--author "e. coli"
+--condRef "Control"
