@@ -37,5 +37,5 @@ but this has not been tested.
 #### Getting the example data
   1. Have [iRODS tools](https://docs.irods.org/master/getting_started/download/) installed on your HPC
   2. Get the example data with `iget -r /iplant/home/shared/imicrobe/example_data/radcot-data`
-    * If using iMicrobe, this will be your input directory
+    * If using iMicrobe, this will be your input directory and you shouldn't need to download
   3. To check you have the data, make sure each DNA and RNA read file matches those found in metadata_template.txt
