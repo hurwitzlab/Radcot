@@ -117,3 +117,6 @@ venv.bak/
 sanitized.txt
 figures
 tables
+.RData
+.html
+.RHistory
