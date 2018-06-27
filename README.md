@@ -30,7 +30,9 @@ OR
 <sup>1</sup>This can be adapted to run on other 
 batch-scheduled high-performance computer systems 
 but this has not been tested.
+
 ---
+
 ## Example run
 #### Getting the example data
   1. Have itools installed on your HPC
