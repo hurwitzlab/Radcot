@@ -1,1 +1,2 @@
+#only get refseq annotation, other option is patric
 --annotation_type refseq
