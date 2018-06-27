@@ -1,6 +1,6 @@
-#alignment quality filter
+#alignment quality filter, this means we get all alignments
 -a 0
 #only analyze protein coding sequences
 -t CDS
-#only get the ID / locus_tag
+#only get the ID / locus_tag, with current gff filtering this has to be set this way
 -i ID
