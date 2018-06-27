@@ -1,2 +1,3 @@
 -f fastq
+#ignore human, synthetic sequences
 -x 9606,32630
