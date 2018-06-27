@@ -42,6 +42,10 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     git clone https://github.com/SEEDtk/RASTtk.git
     cp -r -n RASTtk/lib/* /usr/share/patric-cli/deployment/lib/
 
+    wget ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-ubuntu64.tar.gz
+    tar -xzf sratoolkit.current-ubuntu64.tar.gz
+    cp -r sra*/bin/* /usr/local/bin/
+
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
     bash Miniconda3-latest-Linux-x86_64.sh -b -p /app/miniconda
     sudo ln -s /app/miniconda/bin/python /usr/bin/python
