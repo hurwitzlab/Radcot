@@ -256,6 +256,7 @@ def execute(command):
     print(stderr.decode() + os.linesep)
 
     return process.returncode
+
 # --------------------------------------------------
 def warn(msg):
     """Print a message to STDERR"""
@@ -266,7 +267,6 @@ def die(msg='Something went wrong'):
     """Print a message to STDERR and exit with error"""
     warn('Error: {}'.format(msg))
     sys.exit(1)
-
 
 # --------------------------------------------------
 def line_count(fname):
