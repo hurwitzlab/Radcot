@@ -9,8 +9,8 @@
 #SBATCH --mail-type BEGIN,END,FAIL
 #SBATCH --mail-user scottdaniel@email.arizona.edu
 
-export INPUT_DIR="$WORK/in-smaller"
-export OUT_DIR="$WORK/radcot_test"
+export INPUT_DIR="$WORK/radcot-data"
+export OUT_DIR="$WORK/test-of-radcot"
 export GENOME_DIR="$WORK/genomes"
 
 bash run.sh -o $OUT_DIR \
