@@ -243,16 +243,14 @@ def parse_options_text(options_txt_path):
 
     return options_string
 
-def error(msg):
-    sys.stderr.write("ERROR: {}\n".format(msg))
-    sys.stderr.flush()
-    sys.exit(1)
-
 def execute(command):
 
     print('Executing {}'.format(command) + os.linesep)
-    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                               shell=True)
+    process = subprocess.Popen(command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True)
     (stdout, stderr) = process.communicate()
     print(stdout.decode() + os.linesep)
     print(stderr.decode() + os.linesep)
@@ -284,14 +282,15 @@ def run_job_file(jobfile, msg='Running job', procs=1):
     """Run a job file if there are jobs"""
     num_jobs = line_count(jobfile)
     warn('{} (# jobs = {})'.format(msg, num_jobs))
-
+#--halt now,fail=1 causes parallel to exit with code 1 if any subjobs exit with code 1
     if num_jobs > 0:
-        print('parallel -P {} < '.format(procs) + jobfile)
-        subprocess.run('parallel -P {} < '.format(procs) + jobfile, shell=True)
+        cmd = 'parallel --halt now,fail=1 -P {} < {}'.format(procs, jobfile)
+        warn(cmd)
+        subprocess.run(cmd, shell=True)
 
     os.remove(jobfile)
 
-    return True
+    return subprocess.returncode
 
 #############################
 # Script-specific Functions #
@@ -303,7 +302,7 @@ def parse_metadata(metadata_file):
         df = pd.read_table(metadata_file,delimiter='\t',header=0,comment='#')
         metadata_df = df.replace(pd.np.nan,'',regex=True) #make NaN empty strings to they eval as false in python
     else:
-        error("Metadata file {} can not be found".format(metadata_file))
+        die("Metadata file {} can not be found".format(metadata_file))
     
     if args.debug:
         print("These are the column headings for {}:\n".format(metadata_file))
@@ -359,7 +358,7 @@ def run_centrifuge(reads, cent_opts, patric_opts):
         if returncode == 0:
             print('{} ran sucessfully, continuing...'.format(cent_script))
         else:
-            error('{} failed, exiting'.format(cent_script))
+            die('{} failed, exiting'.format(cent_script))
 
     elif f_reads and r_reads and u_reads:
         
@@ -371,7 +370,7 @@ def run_centrifuge(reads, cent_opts, patric_opts):
         if returncode == 0:
             print('{} ran sucessfully, continuing...'.format(cent_script))
         else:
-            error('{} failed, exiting'.format(cent_script))
+            die('{} failed, exiting'.format(cent_script))
 
     elif u_reads and not f_reads or r_reads:
 
@@ -383,10 +382,10 @@ def run_centrifuge(reads, cent_opts, patric_opts):
         if returncode == 0:
             print('{} ran sucessfully, continuing...'.format(cent_script))
         else:
-            error('{} failed, exiting'.format(cent_script))
+            die('{} failed, exiting'.format(cent_script))
 
     else:
-        error('No Reads!')
+        die('No Reads!')
 
 def prepare_bowtie_db(genome_dir, bt2_idx):
 
@@ -450,7 +449,9 @@ def run_rna_align(genome_dir, metadata, options, procs):
         print("These are the commands I'm running:\n")
         execute('cat {}'.format(jobfile.name))
   
-    if not run_job_file(jobfile=jobfile.name, msg='Running RNA alignments', procs=procs):
+    return_code = run_job_file(jobfile=jobfile.name, msg='Running RNA alignments', procs=procs)
+
+    if return_code != 0:
         die()
 
 def run_htseq(genome_dir, metadata_file, htseq_count_opts, deseq2_opts, procs):
