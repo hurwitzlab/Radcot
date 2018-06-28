@@ -186,6 +186,9 @@ def run_job_file(jobfile, msg='Running job', procs=1):
         cmd = 'parallel --halt now,fail=1 -P {} < {}'.format(procs, jobfile)
         warn(cmd)
         completed_process = subprocess.run(cmd, shell=True)
+    else:
+        warn('No jobs to run!')
+        return 0
 
     os.remove(jobfile)
 
@@ -194,20 +197,20 @@ def run_job_file(jobfile, msg='Running job', procs=1):
 #really basic checker, check that options file exists and then check that each line begins with a '-', then parse
 def parse_options_text(options_txt_path):
     if not (os.path.isfile(options_txt_path)):
-        print("Options text {} does not exist or is not a file\n".format(options_txt_path))
+        warn("Options text {} does not exist or is not a file\n".format(options_txt_path))
         return None
     else:
         options_string = ''
         with open(options_txt_path) as options_txt:
             for line in options_txt:
                 if not line.startswith('-'):
-                    print("Skipping line that doesnt have hyphen\n")
+                    warn("Skipping line that doesnt have hyphen\n")
                 else:
                     options_string += line.replace('\n', ' ')
 
     if args.debug:
-        print("These are the options for {}:\n".format(options_txt_path))
-        print("{}\n".format(options_string))
+        warn("These are the options for {}:\n".format(options_txt_path))
+        warn("{}\n".format(options_string))
 
     return options_string
 
@@ -260,8 +263,8 @@ def parse_metadata(metadata_file):
         die("Metadata file {} can not be found".format(metadata_file))
     
     if args.debug:
-        print("These are the column headings for {}:\n".format(metadata_file))
-        print(list(metadata_df))
+        warn("These are the column headings for {}:\n".format(metadata_file))
+        warn(list(metadata_df))
 
     return metadata_df
 
@@ -335,8 +338,10 @@ def run_deseq():
 
     processCall = ''
 
-    processCall = 'deseq2.r --targetFile {} --rawDir {}\
-            --varInt {} --condRef {} {}'.format(args.metadata, 
+    bin_dir = os.path.dirname(os.path.realpath(__file__))
+    processCall = '{}/deseq2.r --targetFile {} --rawDir {}\
+            --varInt {} --condRef {} {}'.format(bin_dir,
+                    args.metadata, 
                     args.out_dir,
                     args.varInt, 
                     args.condRef, 

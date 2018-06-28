@@ -32,7 +32,10 @@ test_bowtie:
 		-i $(INPUT_DIR) \
 		-o $(OUT_DIR) \
 		-g $(GENOME_DIR) \
-		-m $(WORK)/subset_crc_mouse_metadata.txt \
+		-m $(WORK)/subset_crc_mouse_metadata_simreps.txt \
+		-B $(WORK)/bowtie2-opts.txt \
+		-H $(WORK)/htseq-opts.txt \
+		-D $(WORK)/deseq2-opts.txt \
 		-d -t 12 -P 4 \
 		--skip-centrifuge
 	
@@ -41,7 +44,7 @@ test_count:
 		-i $(INPUT_DIR) \
 		-o $(OUT_DIR) \
 		-g $(GENOME_DIR) \
-		-m $(WORK)/subset_crc_mouse_metadata.txt \
+		-m $(WORK)/subset_crc_mouse_metadata_simreps.txt \
 		-d -t 12 -P 4 \
 		--skip-centrifuge \
 		--skip-rna-align

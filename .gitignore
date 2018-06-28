@@ -122,3 +122,4 @@ tables
 .RHistory
 ~$*
 bt2_index/
+*.gff

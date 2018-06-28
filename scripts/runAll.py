@@ -287,6 +287,9 @@ def run_job_file(jobfile, msg='Running job', procs=1):
         cmd = 'parallel --halt now,fail=1 -P {} < {}'.format(procs, jobfile)
         warn(cmd)
         completed_process = subprocess.run(cmd, shell=True)
+    else:
+        warn('No jobs to run!')
+        return 0
 
     os.remove(jobfile)
 
