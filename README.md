@@ -17,7 +17,7 @@ The idea is that this one program combines all three steps so you do not have to
 - Get counts of RNA alignments to transcript-producing genes (CDS)
 - Run Deseq2 guided by the experiment setup file (metadata.txt) that will output graphs / tables of differentially expressed genes
 
-## How to use:
+## Installation / Quick start:
 1. Use https://www.imicrobe.us/#/apps to access the app with your [cyverse login](http://www.cyverse.org/create-account)
 OR
 2. `git clone https://github.com/hurwitzlab/radcot` on a linux system where you have admin rights
@@ -33,8 +33,9 @@ but this has not been tested.
 
 ---
 
-## Example run
+## Example run:
 #### Getting the example data
-  1. Have itools installed on your HPC
-  2. Get the example data with `iget -r [address]`
+  1. Have [iRODS tools](https://docs.irods.org/master/getting_started/download/) installed on your HPC
+  2. Get the example data with `iget -r /iplant/home/shared/imicrobe/example_data/radcot-data`
+    * If using iMicrobe, this will be your input directory and you shouldn't need to download
   3. To check you have the data, make sure each DNA and RNA read file matches those found in metadata_template.txt
