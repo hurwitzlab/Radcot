@@ -164,11 +164,11 @@ def run_job_file(jobfile, msg='Running job', procs=1):
     if num_jobs > 0:
         cmd = 'parallel --halt now,fail=1 -P {} < {}'.format(procs, jobfile)
         warn(cmd)
-        subprocess.run(cmd, shell=True)
+        completed_process = subprocess.run(cmd, shell=True)
 
     os.remove(jobfile)
 
-    return subprocess.returncode
+    return completed_process.returncode
 
 # --------------------------------------------------
 def split_files(out_dir, files, max_seqs, file_format, procs):

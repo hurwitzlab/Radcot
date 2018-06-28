@@ -1,4 +1,5 @@
 IMG="../stampede/radcot.img"
+WORK=/vagrant
 INPUT_DIR=$(WORK)/in-smaller
 OUT_DIR=$(WORK)/radcot_test
 GENOME_DIR=$(WORK)/genomes

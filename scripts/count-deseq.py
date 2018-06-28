@@ -185,11 +185,11 @@ def run_job_file(jobfile, msg='Running job', procs=1):
     if num_jobs > 0:
         cmd = 'parallel --halt now,fail=1 -P {} < {}'.format(procs, jobfile)
         warn(cmd)
-        subprocess.run(cmd, shell=True)
+        completed_process = subprocess.run(cmd, shell=True)
 
     os.remove(jobfile)
 
-    return subprocess.returncode
+    return completed_process.returncode
 
 #really basic checker, check that options file exists and then check that each line begins with a '-', then parse
 def parse_options_text(options_txt_path):
