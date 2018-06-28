@@ -181,16 +181,15 @@ def run_job_file(jobfile, msg='Running job', procs=1):
     """Run a job file if there are jobs"""
     num_jobs = line_count(jobfile)
     warn('{} (# jobs = {})'.format(msg, num_jobs))
-
+#--halt now,fail=1 causes parallel to exit with code 1 if any subjobs exit with code 1
     if num_jobs > 0:
-        print('parallel -P {} < '.format(procs) + jobfile)
-        subprocess.run('parallel -P {} < '.format(procs) + jobfile, shell=True)
+        cmd = 'parallel --halt now,fail=1 -P {} < {}'.format(procs, jobfile)
+        warn(cmd)
+        subprocess.run(cmd, shell=True)
 
     os.remove(jobfile)
 
-    return True
-
-
+    return subprocess.returncode
 
 #really basic checker, check that options file exists and then check that each line begins with a '-', then parse
 def parse_options_text(options_txt_path):
@@ -215,12 +214,16 @@ def parse_options_text(options_txt_path):
 def execute(command):
 
     print('Executing {}'.format(command) + os.linesep)
-    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                               shell=True)
+    process = subprocess.Popen(command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True)
     (stdout, stderr) = process.communicate()
     print(stdout.decode() + os.linesep)
     print(stderr.decode() + os.linesep)
 
+    return process.returncode
 #############################
 # Script-specific Functions #
 #############################
@@ -241,7 +244,10 @@ def filter_gff(gff_in,gff_out):
 
     processCall = 'bash filtering-gffs.sh {} > {}'.format(gff_in,gff_out)
 
-    execute(processCall)
+    return_code = execute(processCall)
+
+    if return_code != 0:
+        die()
 
     return gff_out
 
@@ -318,7 +324,9 @@ def htseq_count(gff, metadata, procs):
         print("These are the commands I'm running:\n")
         execute('cat {}'.format(jobfile.name))
         
-    if not run_job_file(jobfile=jobfile.name, msg='Running htseq count', procs=procs):
+    return_code = run_job_file(jobfile=jobfile.name, msg='Running htseq count', procs=procs)
+    
+    if return_code != 0:
         die()
 
 def run_deseq():
@@ -334,7 +342,10 @@ def run_deseq():
                     args.condRef, 
                     deseq2_options)
 
-    execute(processCall)
+    return_code = execute(processCall)
+
+    if return_code != 0:
+        die()
 
 def make_species_graphs():
 

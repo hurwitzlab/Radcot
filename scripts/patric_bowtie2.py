@@ -202,19 +202,31 @@ if args.input_fmt not in ['fasta', 'fastq', 'fq']:
 # FUNCTIONS ###
 ###############
 
-def error(msg):
-    sys.stderr.write("ERROR: {}\n".format(msg))
-    sys.stderr.flush()
+# --------------------------------------------------
+def warn(msg):
+    """Print a message to STDERR"""
+    print(msg, file=sys.stderr)
+
+# --------------------------------------------------
+def die(msg='Something went wrong'):
+    """Print a message to STDERR and exit with error"""
+    warn('Error: {}'.format(msg))
     sys.exit(1)
+
+# --------------------------------------------------
 def execute(command):
 
     print('Executing {}'.format(command) + os.linesep)
-    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                               shell=True)
+    process = subprocess.Popen(command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True)
     (stdout, stderr) = process.communicate()
-
-    print(stderr.decode() + os.linesep)
     print(stdout.decode() + os.linesep)
+    print(stderr.decode() + os.linesep)
+
+    return process.returncode
 
 
 def bowtie(bowtie2_db):
@@ -257,19 +269,25 @@ def to_bam(cmd2run):
     for (bowtie2, bam_out) in cmd2run:
         
         #DEBUG#
-        print('Running bowtie2 and converting to bam' + os.linesep)
+        warn('Running bowtie2 and converting to bam' + os.linesep)
 
         convert_to_bam = '{} | samtools view --threads {} -bT {} - > {}'.format( bowtie2, args.threads, args.bt2_idx + '.fna', bam_out + '.tmp')
 
-        execute(convert_to_bam)
+        return_code = execute(convert_to_bam)
+
+        if return_code != 0:
+            die()
 
         #Debug#
-        print('Sorting bam by position' + os.linesep)
+        warn('Sorting bam by position' + os.linesep)
         
         sort_bam = 'samtools sort --threads {} -n {} > {}'.format(args.threads, bam_out + '.tmp', bam_out)
 
-        execute(sort_bam)
-        
+        return_code = execute(sort_bam)
+
+        if return_code != 0:
+            die()
+
         if os.path.isfile(bam_out):
             os.remove(bam_out + '.tmp')
 
@@ -284,8 +302,8 @@ if __name__ == '__main__':
         os.makedirs(args.out_dir)
 
      #DEBUG#
-    print('ALL THE ARGUMENTS:' + os.linesep)
-    pprint(args)
+#    warn('ALL THE ARGUMENTS:' + os.linesep)
+#    pprint(args)
 #
 #    print('Directory contents for genomes:' + os.linesep)
 #    pprint(os.listdir(args.genome_dir))

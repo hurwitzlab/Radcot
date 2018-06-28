@@ -160,14 +160,15 @@ def run_job_file(jobfile, msg='Running job', procs=1):
     """Run a job file if there are jobs"""
     num_jobs = line_count(jobfile)
     warn('{} (# jobs = {})'.format(msg, num_jobs))
-
+#--halt now,fail=1 causes parallel to exit with code 1 if any subjobs exit with code 1
     if num_jobs > 0:
-        print('parallel -P {} < '.format(procs) + jobfile)
-        subprocess.run('parallel -P {} < '.format(procs) + jobfile, shell=True)
+        cmd = 'parallel --halt now,fail=1 -P {} < {}'.format(procs, jobfile)
+        warn(cmd)
+        subprocess.run(cmd, shell=True)
 
     os.remove(jobfile)
 
-    return True
+    return subprocess.returncode
 
 # --------------------------------------------------
 def split_files(out_dir, files, max_seqs, file_format, procs):
@@ -193,7 +194,9 @@ def split_files(out_dir, files, max_seqs, file_format, procs):
 
     jobfile.close()
 
-    if not run_job_file(jobfile=jobfile.name, msg='Splitting input files', procs=procs):
+    return_code = run_job_file(jobfile=jobfile.name, msg='Splitting input files', procs=procs)
+
+    if return_code != 0:
         die()
 
     return list(filter(os.path.isfile,
@@ -231,7 +234,9 @@ def run_centrifuge(file_format, files, exclude_ids,
                                       tsv_file))
     jobfile.close()
 
-    if not run_job_file(jobfile=jobfile.name, msg='Running Centrifuge', procs=procs):
+    return_code = run_job_file(jobfile=jobfile.name, msg='Running Centrifuge', procs=procs)
+    
+    if return_code != 0:
         die()
 
     return list(filter(os.path.isfile,
@@ -269,7 +274,9 @@ def run_cent_paired(file_format, paired_reads, exclude_ids,
                                       tsv_file))
     jobfile.close()
 
-    if not run_job_file(jobfile=jobfile.name, msg='Running Centrifuge', procs=procs):
+    return_code = run_job_file(jobfile=jobfile.name, msg='Running Centrifuge', procs=procs)
+
+    if return_code != 0:
         die()
 
     return list(filter(os.path.isfile,
@@ -294,8 +301,11 @@ def get_genomes(reports_dir, genome_dir, min_abundance, annotation_type, procs):
 
     jobfile.close()
 
-    if not run_job_file(jobfile=jobfile.name, msg='Getting genomes', procs=procs):
+    return_code = run_job_file(jobfile=jobfile.name, msg='Getting genomes', procs=procs)
+    
+    if return_code != 0:
         die()
+
 
 # --------------------------------------------------
 def get_excluded_tax(ids):
