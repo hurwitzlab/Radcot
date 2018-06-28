@@ -3,3 +3,4 @@
 --projectName "awesome project"
 --author "e. coli"
 --condRef "Control"
+--workDir "$OUTPUT_DIR"
