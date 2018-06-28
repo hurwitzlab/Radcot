@@ -6,6 +6,20 @@ This is a monolithic program that combines the three steps
 
 The idea is that this one program combines all three steps so you do not have to run them separately.
 
+Table of Contents
+=================
+* [Radcot](#radcot)
+  * [<a href="https://github.com/hurwitzlab/centrifuge-patric">centrifuge-patric - Radcot Part One - 1st step</a>](#centrifuge-patric---radcot-part-one---1st-step)
+  * [<a href="https://github.com/hurwitzlab/bowtie-samtools">bowtie-samtools - Radcot Part Two - 2nd step</a>](#bowtie-samtools---radcot-part-two---2nd-step)
+  * [<a href="https://github.com/hurwitzlab/count-deseq">count-deseq - Radcot Part Three - 3rd step</a>](#count-deseq---radcot-part-three---3rd-step)
+* [Installation / Quick start:](#installation--quick-start)
+* [Example run:](#example-run)
+  * [Getting the example data](#getting-the-example-data)
+
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+
+These are the individual steps if you would like to install / run them separately. CAUTION: I do not guarantee that these are up-to-date with the full Radcot
+
 ### [centrifuge-patric - Radcot Part One - 1st step](https://github.com/hurwitzlab/centrifuge-patric)
 - Identify bacterial species from a metagenomic sample with DNA alignment
 - Download genomes and annotations of said species
