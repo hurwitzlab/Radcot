@@ -53,3 +53,6 @@ but this has not been tested.
   2. Get the example data with `iget -r /iplant/home/shared/imicrobe/example_data/radcot-data`
     * If using iMicrobe, this will be your input directory and you shouldn't need to download
   3. To check you have the data, make sure each DNA and RNA read file matches those found in metadata_template.txt
+
+
+#### [Detailed developer notes are here as a google doc](https://docs.google.com/document/d/1OaRuW3EOhO2MUyvw8gILqukx_Rr7znnN--M_D5QHS2M/edit?usp=sharing)
