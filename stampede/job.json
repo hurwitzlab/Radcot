@@ -1,29 +1,49 @@
 {
-  "name": "centrifuge-patric soilAssembly test",
-  "appId": "centrifuge-patric-0.0.5",
+  "name":"Radcot test-1530314680",
+  "appId": "radcot-0.0.1",
   "batchQueue": "normal",
   "executionSystem": "tacc-stampede2-sdaniel",
-  "maxRunTime": "12:00:00",
+  "maxRunTime": "24:00:00",
   "memoryPerNode": "96GB",
   "nodeCount": 1,
-  "processorsPerNode": 16,
-  "archive": false,
+  "processorsPerNode": 68,
+  "archive": true,
   "archiveSystem": "data.iplantcollaborative.org",
-  "archivePath": "",
+  "archivePath": null,
   "inputs": {
-    "QUERY": [
-      "scottdaniel/foodMicrobes"
-      ]
+    "in_dir": [ "/work/03859/sdaniel/stampede2/radcot-data" ],
+    "metadata": [ "./metadata.txt" ],
+    "cent_opts": [ "./centrifuge-opts.txt" ],
+    "patric_opts": [ "./patric-opts.txt" ],
+    "bowtie2_opts": [ "./bowtie2-opts.txt" ],
+    "htseq_count_opts": [ "./htseq-opts.txt" ],
+    "deseq2_opts": [ "./deseq2-opts.txt" ]
   },
-  "parameter": {
-    "FORMAT": [
-      "fastq"
-      ],
-    "MIN_ABUNDANCE": [
-      0.05
-      ],
-    "EXCLUDE_TAXIDS": [
-      "9606,32630"
-      ]
-  }
+  "parameters": {
+    "out_dir": "./out",
+    "genome_dir": "./genomes",
+    "bt2_idx": "./bt2_idx/genome",
+    "debug": false,
+    "threads": 12,
+    "procs": 4,
+    "skip_cent": false,
+    "skip_rna": false
+  },
+  "notifications": [
+    {
+      "url":"https://requestbin.agaveapi.co/13d9arc1?job_id=${JOB_ID}&status=${JOB_STATUS}",
+      "event":"*",
+      "persistent":true
+    },
+    {
+      "url":"scottdaniel@email.arizona.edu",
+      "event":"FINISHED",
+          "persistent":false
+    },
+    {
+      "url":"scottdaniel@email.arizona.edu",
+      "event":"FAILED",
+      "persistent":false
+    }
+  ]
 }
