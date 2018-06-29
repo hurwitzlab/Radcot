@@ -250,7 +250,7 @@ def filter_gff(gff_in,gff_out):
     return_code = execute(processCall)
 
     if return_code != 0:
-        die()
+        die("Something went wrong with filtering-gffs.sh")
 
     return gff_out
 
@@ -330,7 +330,7 @@ def htseq_count(gff, metadata, procs):
     return_code = run_job_file(jobfile=jobfile.name, msg='Running htseq count', procs=procs)
     
     if return_code != 0:
-        die()
+        die("Something went wrong with running htseq_count")
 
 def run_deseq():
 
@@ -350,7 +350,7 @@ def run_deseq():
     return_code = execute(processCall)
 
     if return_code != 0:
-        die()
+        die("Something went wrong with running deseq2")
 
 def make_species_graphs():
 
