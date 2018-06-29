@@ -405,7 +405,10 @@ def prepare_bowtie_db(genome_dir, bt2_idx):
         pprint("Created a combined genome for you: {}".format(bt2_db_fasta))
 
     bowtie_db_cmd = 'bowtie2-build --threads {} -f {} {}'.format(args.threads, bt2_db_fasta, args.bt2_idx)
-    execute(bowtie_db_cmd)
+    return_code = execute(bowtie_db_cmd)
+
+    if return_code != 0:
+        die("Something went wrong with building the bowtie2 db")
 
     return args.bt2_idx
 
@@ -464,7 +467,10 @@ def run_htseq(genome_dir, metadata_file, htseq_count_opts, deseq2_opts, procs):
         parse_options_text(deseq2_opts)
     
     bin_dir = os.path.dirname(os.path.realpath(__file__))
-    count_script = os.path.join(bin_dir, 'count-deseq.py')
+    if args.debug:
+        count_script = os.path.join(bin_dir, 'count-deseq.py --debug')
+    else:
+        count_script = os.path.join(bin_dir, 'count-deseq.py')
 
     tmpl = '{0} --gff-dir {1} --bams-dir {2} --metadata {3} --out-dir {4} \
             --threads {5} --htseq-count-options {6} --deseq2-options {7} \
@@ -488,9 +494,10 @@ def run_htseq(genome_dir, metadata_file, htseq_count_opts, deseq2_opts, procs):
             htseq_count_opts, #6
             deseq2_opts, #7
             procs) #8
-    execute(cmd)
+    return_code = execute(cmd)
 
-    return None
+    if return_code != 0:
+        die("Something went wrong running count-deseq.py")
 
 ##################
 # THE MAIN LOOP ##
