@@ -1,10 +1,9 @@
 ./test.sh
 ./template.sh
 ./run.sh
-./radcot.img
-../exampleOptions/bowtie2-opts.txt
-../exampleOptions/deseq2-opts.txt
-../exampleOptions/centrifuge-opts.txt
-../exampleOptions/PATRIC-opts.txt
-../exampleOptions/htseq-opts.txt
-../metadata_template.txt
+./bowtie2-opts.txt
+./deseq2-opts.txt
+./centrifuge-opts.txt
+./PATRIC-opts.txt
+./htseq-opts.txt
+./metadata_template.txt
