@@ -55,6 +55,10 @@ but this has not been tested.
   3. To check you have the data, make sure each DNA and RNA read file matches those found in metadata_template.txt
 
 #### Running it
-  4. Move the radcot.img 
+  4. Move the radcot.img into /stampede
+  5. Issue `make test`
+  6. Detail of expected output can be found in the google doc at the bottom of the page but briefly:
+    * You should see centrifugue reports, genomes, bam files, count files and finally deseq graphs and tables
+    in the output
 
 #### [Detailed developer notes are here as a google doc](https://docs.google.com/document/d/1OaRuW3EOhO2MUyvw8gILqukx_Rr7znnN--M_D5QHS2M/edit?usp=sharing)
