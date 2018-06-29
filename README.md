@@ -16,6 +16,7 @@ Table of Contents
 * [Example run:](#example-run)
   * [Getting the example data](#getting-the-example-data)
   * [Running it](#running-it)
+* [References:](#references)
 * [<a href="https://docs.google.com/document/d/1OaRuW3EOhO2MUyvw8gILqukx_Rr7znnN--M_D5QHS2M/edit?usp=sharing" rel="nofollow">Detailed developer notes are here as a google doc</a>](#detailed-developer-notes-are-here-as-a-google-doc)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
@@ -73,4 +74,4 @@ but this has not been tested.
 
 #### [Detailed developer notes are here as a google doc](https://docs.google.com/document/d/1OaRuW3EOhO2MUyvw8gILqukx_Rr7znnN--M_D5QHS2M/edit?usp=sharing)
 
-Thank you to @kyclark and @bhurwitz for helpfull comments and suggestions.
+Thank you to @kyclark and @bhurwitz33 for helpful comments and suggestions.
