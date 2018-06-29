@@ -62,5 +62,15 @@ but this has not been tested.
   6. Detail of expected output can be found in the google doc at the bottom of the page but briefly:
     * You should see centrifugue reports, genomes, bam files, count files and finally deseq graphs and tables
     in the output
+    
+#### References:
+* http://singularity.lbl.gov/all-releases
+* https://ccb.jhu.edu/software/centrifuge/
+* https://docs.patricbrc.org/cli_tutorial/index.html
+* http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+* http://htseq.readthedocs.io/en/master/count.html
+* https://github.com/PF2-pasteur-fr/SARTools
 
 #### [Detailed developer notes are here as a google doc](https://docs.google.com/document/d/1OaRuW3EOhO2MUyvw8gILqukx_Rr7znnN--M_D5QHS2M/edit?usp=sharing)
+
+Thank you to @kyclark and @bhurwitz for helpfull comments and suggestions.
